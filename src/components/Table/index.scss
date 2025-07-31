@@ -1,0 +1,23 @@
+.table {
+    &-wrapper {
+        width: 100%;
+        overflow: hidden;
+    }
+
+    &-container {
+        max-height: 100%;
+    }
+
+    &-head{
+        &__cell {
+            font-size: 16px;
+            font-weight: 600;
+        }
+    }
+
+    &-body {
+        &__cell-action {
+            width: 10%;
+        }
+    }
+}

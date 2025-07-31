@@ -1,0 +1,36 @@
+@use "@styles/variables.scss" as *;
+
+.drawer {
+    &-wrapper {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
+
+    &-header {
+        height: 50px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 5px;
+        background: $primary-bg;
+
+        &__title {
+            font-size: 16px;
+            font-weight: 600;
+            cursor: default;
+        }
+
+        &__close-icon {
+            color: $primary-color !important;
+            
+            &>svg {
+                font-size: 24px;
+            }
+        }
+    }
+
+    &-main-container {
+        flex: 1;
+    }
+}

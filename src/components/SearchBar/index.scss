@@ -1,0 +1,23 @@
+@use "@styles/variables.scss" as *;
+
+.search-bar{
+    &-wrapper {
+        border-radius: 30px;
+        display: flex;
+        align-items: center;
+    }
+
+    &__icon {
+        height: 100%;
+        padding: 0 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &__input-base {
+        width: 100%;
+        color: inherit !important;
+        padding-right: 20px;
+    }
+}

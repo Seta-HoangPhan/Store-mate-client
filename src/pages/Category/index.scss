@@ -1,0 +1,12 @@
+.category {
+    &-wrapper {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    &-header {
+        margin-top: 10px;
+    }
+}
