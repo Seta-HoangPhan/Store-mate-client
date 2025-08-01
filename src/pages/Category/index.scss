@@ -9,4 +9,16 @@
     &-header {
         margin-top: 10px;
     }
+
+    &-delete-confirm {
+        max-width: 500px;
+        
+        &>p:first-child {
+            margin: 0;
+        }
+
+        &>p:last-child {
+            margin-bottom: 0;
+        }
+    }
 }

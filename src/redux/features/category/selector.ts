@@ -19,6 +19,15 @@ export const selectIsOpenEditCategoryDrawer = (state: RootState) =>
 export const selectCategoryDetail = (state: RootState) =>
   state.category.categoryDetail;
 
+export const selectCategoryCreate = (state: RootState) =>
+  state.category.categoryCreate;
+
+export const selectCategoryEdit = (state: RootState) =>
+  state.category.categoryEdit;
+
+export const selectCategoryDelete = (state: RootState) =>
+  state.category.categoryDelete;
+
 export const selectCategoryBySearch = createSelector(
   selectCategories,
   selectFilterCategorySearch,

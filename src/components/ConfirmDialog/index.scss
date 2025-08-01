@@ -1,0 +1,21 @@
+@use "@styles/variables.scss" as *;
+
+.confirm-dialog {
+    &__paper {
+        min-width: 400px;
+    }
+
+    &__title {
+        background: $primary-bg;
+    }
+
+    &__content{
+        padding: 20px 24px !important;
+        min-height: 50px;
+        text-align: justify;
+    }
+
+    &__actions {
+        background: $primary-bg;
+    }
+}

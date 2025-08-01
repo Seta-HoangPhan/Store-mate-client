@@ -1,0 +1,59 @@
+@use "@styles/variables.scss" as *;
+
+.login {
+    &-main-content {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &-wrapper {
+        width: 350px;
+        min-height: 320px;
+        background: $secondary-bg;
+        color: $secondary-color;
+        border-radius: 10px;
+        padding: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 20px;
+
+        &>h3 {
+            margin-bottom: 0;
+        }
+
+        &>button {
+            margin-top: 10px;
+        }
+    }
+
+    &-form-control {
+        gap: 10px;
+
+        &>label {
+            color: $secondary-color;
+        }
+
+        .MuiInputBase-root {
+            color: $secondary-color;
+            line-height: unset;
+        }        
+
+        fieldset {
+            border-color: $secondary-color !important;
+        }
+
+        &__input-adornment {
+            &>p {
+                color: $secondary-color;
+            }
+        }
+
+        &__show-pwd {
+            cursor: pointer;
+        }
+    }
+}

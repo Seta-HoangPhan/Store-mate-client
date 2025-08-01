@@ -1,4 +1,11 @@
 import type { RefreshTokenRes } from "@typings/apiResponse";
+import {
+  getAccessTokenLS,
+  getRefreshTokenLS,
+  removeAccessTokenLS,
+  removeRefreshTokenLS,
+  setAccessTokenLS,
+} from "@utils/localStorage/token";
 import axios, { AxiosError, type RawAxiosRequestConfig } from "axios";
 import humps from "humps";
 import settings from "./settings";
@@ -30,7 +37,7 @@ export const axiosClient = axios.create({
 });
 
 axiosClient.interceptors.request.use((config) => {
-  const token = localStorage.getItem("accessToken");
+  const token = getAccessTokenLS();
   if (token) {
     config.headers["Authorization"] = `Bearer ${token}`;
   }
@@ -77,7 +84,7 @@ axiosClient.interceptors.response.use(
       isFreshingToken = true;
 
       try {
-        const refreshToken = localStorage.getItem("refreshToken");
+        const refreshToken = getRefreshTokenLS();
         if (refreshToken) {
           const res = await axiosClient.post<RefreshTokenRes>(
             "/auth/refresh-token",
@@ -87,13 +94,13 @@ axiosClient.interceptors.response.use(
           );
 
           const newAccessToken = res.data.data.accessToken;
-          localStorage.setItem("accessToken", newAccessToken);
+          setAccessTokenLS(newAccessToken);
           processQueue(null, newAccessToken);
         }
       } catch (error) {
         processQueue(error, null);
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
+        removeAccessTokenLS();
+        removeRefreshTokenLS();
         window.location.href = "/login";
         return Promise.reject(error);
       } finally {
@@ -105,16 +112,72 @@ axiosClient.interceptors.response.use(
   }
 );
 
-export const axiosGet = async <T>(
-  path: string,
-  params?: Record<string, unknown>
-): Promise<[T | null, AxiosError | null]> => {
+export const axiosGet = async <T>({
+  path,
+  params,
+}: {
+  path: string;
+  params?: Record<string, unknown>;
+}): Promise<[T | null, AxiosError | null]> => {
   try {
     const res = await axiosClient.get(path, { params });
-    return [res.data, null];
+    return [res.data.data, null];
   } catch (error) {
     if (error instanceof AxiosError) {
-      return [null, error.response?.data];
+      return [null, error.response?.data.detail];
+    }
+    console.error(`get ${path}`, error);
+    throw Error("Something went wrong!");
+  }
+};
+
+export const axiosPost = async <T>({
+  path,
+  data,
+}: {
+  path: string;
+  data?: Record<string, unknown>;
+}): Promise<[T | null, AxiosError | null]> => {
+  try {
+    const res = await axiosClient.post(path, data);
+    return [res.data.data, null];
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      return [null, error.response?.data.detail];
+    }
+    console.error(`get ${path}`, error);
+    throw Error("Something went wrong!");
+  }
+};
+
+export const axiosPut = async <T>({
+  path,
+  data,
+}: {
+  path: string;
+  data?: Record<string, unknown>;
+}): Promise<[T | null, AxiosError | null]> => {
+  try {
+    const res = await axiosClient.put(path, data);
+    return [res.data.data, null];
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      return [null, error.response?.data.detail];
+    }
+    console.error(`get ${path}`, error);
+    throw Error("Something went wrong!");
+  }
+};
+
+export const axiosDelete = async <T>(
+  path: string
+): Promise<[T | null, AxiosError | null]> => {
+  try {
+    const res = await axiosClient.delete(path);
+    return [res.data.data, null];
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      return [null, error.response?.data.detail];
     }
     console.error(`get ${path}`, error);
     throw Error("Something went wrong!");

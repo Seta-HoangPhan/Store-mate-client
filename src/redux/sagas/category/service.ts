@@ -1,21 +1,36 @@
-import type { CategoryRes } from "@typings/apiResponse";
-import { axiosGet } from "../../../axiosClient";
-import { get } from "lodash";
+import {
+  axiosDelete,
+  axiosGet,
+  axiosPost,
+  axiosPut,
+} from "../../../axiosClient";
+import type { Category } from "@typings/redux";
 
 export const fetchAllCategories = async () => {
-  const [data, err] = await axiosGet<CategoryRes>("/categories");
-  if (data) {
-    return [data.data, null];
-  } else {
-    return [null, get(err, "detail", "Fetch categories failed!")];
-  }
+  return await axiosGet<Category[]>({ path: "/categories" });
 };
 
 export const fetchCategoryById = async (id: number) => {
-  const [data, err] = await axiosGet<CategoryRes>(`/categories/${id}`);
-  if (data) {
-    return [data.data, null];
-  } else {
-    return [null, get(err, "detail", "Fetch category failed!")];
+  return await axiosGet<Category>({ path: `/categories/${id}` });
+};
+
+export const createCategory = async (data: {
+  name: string;
+  description?: string;
+}) => {
+  return await axiosPost<Category>({ path: "categories", data });
+};
+
+export const editCategory = async (
+  id: number,
+  data: {
+    name?: string;
+    description?: string;
   }
+) => {
+  return await axiosPut<Category>({ path: `/categories/${id}`, data });
+};
+
+export const deleteCategory = async (id: number) => {
+  return await axiosDelete<Category>(`/categories/${id}`);
 };

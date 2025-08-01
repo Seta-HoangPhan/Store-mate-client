@@ -5,6 +5,15 @@ import {
   setFilterCategoriesLS,
 } from "@utils/localStorage/filterCategories";
 import {
+  createCategory,
+  createCategoryFailed,
+  createCategorySuccess,
+  deleteCategory,
+  deleteCategoryFailed,
+  deleteCategorySuccess,
+  editCategory,
+  editCategoryFailed,
+  editCategorySuccess,
   fetchCategories,
   fetchCategoriesFailed,
   fetchCategoriesSuccess,
@@ -32,6 +41,21 @@ interface InitialState {
     data?: Category;
     error?: string;
   };
+  categoryCreate: {
+    status: APIStatus;
+    data?: Category;
+    error?: string;
+  };
+  categoryEdit: {
+    status: APIStatus;
+    data?: Category;
+    error?: string;
+  };
+  categoryDelete: {
+    status: APIStatus;
+    data?: { id: number };
+    error?: string;
+  };
 }
 
 const initialState: InitialState = {
@@ -44,6 +68,15 @@ const initialState: InitialState = {
   isOpenCreateCategoryDrawer: false,
   isOpenEditCategoryDrawer: false,
   categoryDetail: {
+    status: "idle",
+  },
+  categoryCreate: {
+    status: "idle",
+  },
+  categoryEdit: {
+    status: "idle",
+  },
+  categoryDelete: {
     status: "idle",
   },
 };
@@ -83,6 +116,8 @@ const categoryReducer = createReducer(initialState, (builder) => {
     .addCase(toggleOpenCreateCategoryDrawer, (state) => {
       state.isOpenCreateCategoryDrawer = !state.isOpenCreateCategoryDrawer;
     })
+
+    // fetch one
     .addCase(toggleOpenEditCategoryDrawer, (state, { payload: catId }) => {
       state.isOpenEditCategoryDrawer = !state.isOpenEditCategoryDrawer;
       if (catId) {
@@ -96,6 +131,56 @@ const categoryReducer = createReducer(initialState, (builder) => {
     .addCase(fetchCategoryFailed, (state, { payload: error }) => {
       state.categoryDetail.status = "rejected";
       state.categoryDetail.error = error;
+    })
+
+    // create
+    .addCase(createCategory, (state) => {
+      state.categoryCreate.status = "loading";
+    })
+    .addCase(createCategorySuccess, (state, { payload: category }) => {
+      state.categoryCreate.status = "completed";
+      state.categoryCreate.data = category;
+      state.categories.data = [
+        state.categoryCreate.data,
+        ...state.categories.data,
+      ];
+    })
+    .addCase(createCategoryFailed, (state, { payload: error }) => {
+      state.categoryCreate.status = "rejected";
+      state.categoryDetail.error = error;
+    })
+
+    // edit
+    .addCase(editCategory, (state) => {
+      state.categoryEdit.status = "loading";
+    })
+    .addCase(editCategorySuccess, (state, { payload: category }) => {
+      state.categoryEdit.status = "completed";
+      state.categoryEdit.data = category;
+      state.categories.data = state.categories.data.map((cat) => {
+        if (cat.id !== category.id) return cat;
+        return category;
+      });
+    })
+    .addCase(editCategoryFailed, (state, { payload: error }) => {
+      state.categoryEdit.status = "rejected";
+      state.categoryEdit.error = error;
+    })
+
+    // delete
+    .addCase(deleteCategory, (state) => {
+      state.categoryDelete.status = "loading";
+    })
+    .addCase(deleteCategorySuccess, (state, { payload: category }) => {
+      state.categoryDelete.status = "completed";
+      state.categoryDelete.data = category;
+      state.categories.data = state.categories.data.filter(
+        (cat) => cat.id !== category.id
+      );
+    })
+    .addCase(deleteCategoryFailed, (state, { payload: error }) => {
+      state.categoryDelete.status = "rejected";
+      state.categoryDelete.error = error;
     });
 });
 

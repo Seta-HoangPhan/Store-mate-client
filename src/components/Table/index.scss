@@ -10,14 +10,18 @@
 
     &-head{
         &__cell {
-            font-size: 16px;
-            font-weight: 600;
+            font-size: 16px !important;
+            font-weight: 600 !important;
         }
     }
 
     &-body {
         &__cell-action {
             width: 10%;
+
+            &>button:first-child {
+                margin-right: 5px;
+            }
         }
     }
 }

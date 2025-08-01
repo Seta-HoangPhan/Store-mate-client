@@ -6,11 +6,17 @@ import {
   FormLabel,
   TextField,
 } from "@mui/material";
-import { selectCategoryDetail } from "@redux/features/category/selector";
+import {
+  selectCategoryCreate,
+  selectCategoryDetail,
+  selectCategoryEdit,
+} from "@redux/features/category/selector";
 import { useEffect } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useSelector } from "react-redux";
 import "./index.scss";
+import { useDispatch } from "react-redux";
+import { createCategory, editCategory } from "@redux/features/category/action";
 
 interface CategoryForm {
   name: string;
@@ -23,7 +29,12 @@ interface Props {
 }
 
 export default function CategoryForm({ isCreate, handleCloseDrawer }: Props) {
-  const { data: categoryDetail, status } = useSelector(selectCategoryDetail);
+  const dispatch = useDispatch();
+
+  const { data: categoryDetail, status: statusDetail } =
+    useSelector(selectCategoryDetail);
+  const { status: statusCreate } = useSelector(selectCategoryCreate);
+  const { status: statusEdit } = useSelector(selectCategoryEdit);
 
   const {
     handleSubmit,
@@ -38,21 +49,45 @@ export default function CategoryForm({ isCreate, handleCloseDrawer }: Props) {
   const enableSubmitBtn = (isCreate && name) || (!isCreate && isDirty && name);
 
   useEffect(() => {
-    if (!isCreate && status === "completed" && categoryDetail) {
+    if (!isCreate && statusDetail === "completed" && categoryDetail) {
       reset({
         name: categoryDetail.name,
         description: categoryDetail.description,
       });
     }
-  }, [categoryDetail, status, isCreate, reset]);
+  }, [categoryDetail, statusDetail, isCreate, reset]);
 
-  const onSubmit = (data: CategoryForm) => console.log("check12 data", data);
+  useEffect(() => {
+    const isClose =
+      (statusCreate !== "loading" && isCreate) ||
+      (!isCreate && statusEdit !== "loading");
+
+    if (isClose) {
+      handleCloseDrawer();
+    }
+  }, [statusCreate, handleCloseDrawer, isCreate, statusEdit]);
+
+  const onSubmit = (data: CategoryForm) => {
+    if (isCreate) {
+      dispatch(createCategory(data));
+      return;
+    }
+
+    if (categoryDetail) {
+      dispatch(
+        editCategory({
+          id: categoryDetail?.id,
+          ...data,
+        })
+      );
+    }
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="category-form">
       <div className="category-form-wrapper">
         <div className="category-form__main-content">
-          {status === "loading" ? (
+          {statusDetail === "loading" ? (
             <div className="category-form__main-content__loading">
               <CircularProgress />
             </div>
@@ -108,7 +143,13 @@ export default function CategoryForm({ isCreate, handleCloseDrawer }: Props) {
             disabled={!enableSubmitBtn}
             className="drawer-footer__button"
           >
-            {isCreate ? "Tạo Mới" : "Lưu Thay Đổi"}
+            {statusCreate === "loading" || statusEdit === "loading" ? (
+              <CircularProgress color="inherit" size={30} />
+            ) : isCreate ? (
+              "Tạo Mới"
+            ) : (
+              "Lưu Thay Đổi"
+            )}
           </Button>
         </div>
       </div>
