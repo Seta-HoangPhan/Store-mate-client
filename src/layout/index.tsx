@@ -22,6 +22,8 @@ import { Outlet, useLocation, useNavigate } from "react-router";
 import LayoutDrawer from "./Drawer";
 import "./index.scss";
 import LayoutSearch from "./Search";
+import { useDispatch } from "react-redux";
+import * as actions from "@redux/features/auth/action";
 
 const pathnames = {
   category: "Loại sản phẩm",
@@ -72,6 +74,7 @@ const sidebarItems = [
 ];
 
 export default function Layout() {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const localtion = useLocation();
   const pathname = localtion.pathname;
@@ -83,6 +86,10 @@ export default function Layout() {
     const validPathnames = Object.keys(pathnames);
     setCurrPage(validPathnames.includes(currentPage) ? currentPage : "");
   }, [pathname]);
+
+  const handleLogout = () => {
+    dispatch(actions.logout());
+  };
 
   return (
     <div className="layout-wrapper">
@@ -116,7 +123,9 @@ export default function Layout() {
         <div className="layout-container__appbar">
           <div />
           <LayoutSearch />
-          <Button variant="contained">Đăng xuất</Button>
+          <Button variant="contained" onClick={handleLogout}>
+            Đăng xuất
+          </Button>
         </div>
         <div className="layout-container__maincontent">
           <Outlet />

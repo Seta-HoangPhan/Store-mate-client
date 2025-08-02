@@ -1,46 +1,59 @@
 import { createReducer } from "@reduxjs/toolkit";
 import type { APIStatus, User } from "@typings/redux";
 import {
+  fetchUser,
   fetchUserFailed,
   fetchUserSuccess,
   login,
   loginFailed,
   loginSuccess,
+  logout,
 } from "./action";
 
 interface InitialState {
-  profile?: User;
-  login: {
+  profile: {
     status: APIStatus;
+    data?: User;
   };
 }
 
 const initialState: InitialState = {
-  login: {
+  profile: {
     status: "idle",
   },
 };
 
 const authReducer = createReducer(initialState, (builder) => {
   builder
+    .addCase(fetchUser, (state) => {
+      state.profile.status = "loading";
+    })
     .addCase(fetchUserSuccess, (state, { payload: user }) => {
-      state.profile = user;
+      state.profile.status = "completed";
+      state.profile.data = user;
     })
     .addCase(fetchUserFailed, (state) => {
-      state.profile = undefined;
+      state.profile.status = "rejected";
+      state.profile.data = undefined;
     })
 
     // login
     .addCase(login, (state) => {
-      state.login.status = "loading";
+      state.profile.status = "loading";
     })
     .addCase(loginSuccess, (state, { payload: user }) => {
-      state.login.status = "completed";
-      state.profile = user;
+      state.profile.status = "completed";
+      state.profile.data = user;
     })
     .addCase(loginFailed, (state) => {
-      state.login.status = "rejected";
-      state.profile = undefined;
+      state.profile.status = "rejected";
+      state.profile.data = undefined;
+    })
+
+    // logout
+    .addCase(logout, (state) => {
+      state.profile.status = "idle";
+      state.profile.data = undefined;
     });
 });
 

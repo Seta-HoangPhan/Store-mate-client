@@ -3,7 +3,7 @@ import { useSelector } from "react-redux";
 import { Navigate, Outlet } from "react-router";
 
 export default function PublicRoute() {
-  const isLoggedIn = useSelector(selectProfile);
+  const { data: user } = useSelector(selectProfile);
 
-  return isLoggedIn ? <Navigate to="/product" replace /> : <Outlet />;
+  return user ? <Navigate to="/product" replace /> : <Outlet />;
 }

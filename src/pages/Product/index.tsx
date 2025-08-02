@@ -83,7 +83,7 @@ export default function Product() {
           </div>
         </div>
       </div>
-      <Table />
+      {/* <Table /> */}
     </div>
   );
 }

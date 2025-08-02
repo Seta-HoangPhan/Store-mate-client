@@ -8,6 +8,7 @@ import {
   InputAdornment,
   TextField,
 } from "@mui/material";
+import * as action from "@redux/features/auth/action";
 import { AsYouType } from "libphonenumber-js";
 import { useState, type ChangeEvent } from "react";
 import {
@@ -15,6 +16,7 @@ import {
   useForm,
   type ControllerRenderProps,
 } from "react-hook-form";
+import { useDispatch } from "react-redux";
 import "./index.scss";
 
 interface FormValue {
@@ -23,6 +25,8 @@ interface FormValue {
 }
 
 export default function Login() {
+  const dispatch = useDispatch();
+
   const [showPwd, setShowPwd] = useState<boolean>(false);
 
   const {
@@ -58,17 +62,22 @@ export default function Login() {
       setError("phone", {
         message: "Nhập số điện thoại",
       });
+      return;
     }
     if (!data.password) {
       setError("password", {
         message: "Nhập mật khẩu",
       });
+      return;
     }
     if (data.phone.length < 9) {
       setError("phone", {
         message: "Số điện thoại cần đủ 9 số (không bao gồm +84)",
       });
+      return;
     }
+
+    dispatch(action.login(data));
   };
 
   return (
@@ -94,7 +103,6 @@ export default function Login() {
                     render={({ field }) => (
                       <TextField
                         {...field}
-                        type="tel"
                         slotProps={{
                           input: {
                             startAdornment: (
@@ -107,10 +115,6 @@ export default function Login() {
                               </InputAdornment>
                             ),
                           },
-                          htmlInput: {
-                            inputMode: "numeric",
-                            pattern: "[0-9]*",
-                          },
                         }}
                         onChange={(e) => handleChangePhone(e, field)}
                         error={!!errors.phone}
@@ -121,23 +125,33 @@ export default function Login() {
                 </FormControl>
                 <FormControl fullWidth className="login-form-control">
                   <FormLabel>Mật Khẩu:</FormLabel>
-                  <TextField
-                    type={showPwd ? "text" : "password"}
-                    slotProps={{
-                      input: {
-                        endAdornment: (
-                          <div
-                            onClick={() => setShowPwd((prev) => !prev)}
-                            className="login-form-control__show-pwd"
-                          >
-                            {showPwd ? <VisibilityOff /> : <Visibility />}
-                          </div>
-                        ),
-                      },
-                    }}
-                    onChange={() => clearErrors("password")}
-                    error={!!errors.password}
-                    helperText={errors.password?.message}
+                  <Controller
+                    name="password"
+                    control={control}
+                    render={({ field }) => (
+                      <TextField
+                        {...field}
+                        type={showPwd ? "text" : "password"}
+                        slotProps={{
+                          input: {
+                            endAdornment: (
+                              <div
+                                onClick={() => setShowPwd((prev) => !prev)}
+                                className="login-form-control__show-pwd"
+                              >
+                                {showPwd ? <VisibilityOff /> : <Visibility />}
+                              </div>
+                            ),
+                          },
+                        }}
+                        onChange={(e) => {
+                          field.onChange(e.target.value);
+                          clearErrors("password");
+                        }}
+                        error={!!errors.password}
+                        helperText={errors.password?.message}
+                      />
+                    )}
                   />
                 </FormControl>
                 <Button variant="contained" type="submit">

@@ -1,12 +1,17 @@
 import * as action from "@redux/features/auth/action";
 import type { ApiResponse } from "@typings/apiResponse";
 import type { User } from "@typings/redux";
-import { setAccessTokenLS, setRefreshTokenLS } from "@utils/localStorage/token";
+import {
+  removeAccessTokenLS,
+  removeRefreshTokenLS,
+  setAccessTokenLS,
+  setRefreshTokenLS,
+} from "@utils/localStorage/token";
 import { all, call, put, takeEvery } from "redux-saga/effects";
 import * as service from "./service";
 
-export default function* AppBooting() {
-  yield all([watchLogin()]);
+export default function* authSaga() {
+  yield all([watchLogin(), watchLogout()]);
 }
 
 function* watchLogin() {
@@ -27,4 +32,13 @@ function* handleLogin({ payload }: ReturnType<typeof action.login>) {
   } else if (err) {
     yield put(action.loginFailed);
   }
+}
+
+function* watchLogout() {
+  yield takeEvery(action.logout, handleLogout);
+}
+
+function handleLogout() {
+  removeAccessTokenLS();
+  removeRefreshTokenLS();
 }
