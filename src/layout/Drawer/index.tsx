@@ -12,11 +12,15 @@ import {
 import { useEffect, useState, type ReactElement } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "./index.scss";
+import { selectOpenCreareProductDrawer } from "@redux/features/product/selector";
+import ProductForm from "@components/ProductForm";
+import { toggleOpenCreateProductDrawer } from "@redux/features/product/action";
 
 const DRAWER_WIDTH = 400;
 const titles = {
   createCategory: "Tạo mới loại sản phẩm",
   editCategory: "Chỉnh sửa loại sản phẩm",
+  createProduct: "Tạo mới sản phẩm",
 } as const;
 type Title = keyof typeof titles;
 
@@ -26,10 +30,13 @@ export default function LayoutDrawer() {
   const isOpenCreateCategory = useSelector(selectIsOpenCreateCategoryDrawer);
   const isOpenEditCategory = useSelector(selectIsOpenEditCategoryDrawer);
 
+  const isOpenCreateProduct = useSelector(selectOpenCreareProductDrawer);
+
   const [title, setTitle] = useState<Title>("createCategory");
   const [component, setComponent] = useState<ReactElement | null>(null);
 
-  const open = isOpenCreateCategory || isOpenEditCategory;
+  const open =
+    isOpenCreateCategory || isOpenEditCategory || isOpenCreateProduct;
 
   useEffect(() => {
     switch (true) {
@@ -43,11 +50,17 @@ export default function LayoutDrawer() {
         setTitle("editCategory");
         setComponent(<CategoryForm handleCloseDrawer={handleCloseDrawer} />);
         break;
+      case isOpenCreateProduct:
+        setTitle("createProduct");
+        setComponent(
+          <ProductForm isCreate handleCloseDrawer={handleCloseDrawer} />
+        );
+        break;
       default:
         break;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpenCreateCategory, isOpenEditCategory]);
+  }, [isOpenCreateCategory, isOpenEditCategory, isOpenCreateProduct]);
 
   const handleCloseDrawer = () => {
     switch (true) {
@@ -56,6 +69,9 @@ export default function LayoutDrawer() {
         break;
       case isOpenEditCategory:
         dispatch(toggleOpenEditCategoryDrawer());
+        break;
+      case isOpenCreateProduct:
+        dispatch(toggleOpenCreateProductDrawer());
         break;
       default:
         break;

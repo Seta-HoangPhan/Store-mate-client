@@ -1,0 +1,15 @@
+@use "@styles/variables.scss" as *;
+
+.text-area {
+    &-input {
+        background: $primary-bg;
+
+        &>svg {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            transform: rotate(135deg);
+            color: $border-color;
+        }
+    }
+}

@@ -1,0 +1,10 @@
+@use "@styles/variables.scss" as *;
+
+.text-field {
+    background: $primary-bg;
+    width: 90%;
+    
+    &-input {
+        height: 40px;
+    }
+}

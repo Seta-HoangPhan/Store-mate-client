@@ -1,0 +1,11 @@
+@use "@styles/variables.scss" as *;
+
+.select {
+    width: 90%;
+    height: 40px;
+    background: $primary-bg;
+
+    &-paper {
+        height: 200px !important;
+    }
+}

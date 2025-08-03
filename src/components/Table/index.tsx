@@ -1,3 +1,5 @@
+import DriveFileRenameOutlineOutlinedIcon from "@mui/icons-material/DriveFileRenameOutlineOutlined";
+import RemoveCircleOutlineOutlinedIcon from "@mui/icons-material/RemoveCircleOutlineOutlined";
 import { IconButton, Table as MuiTable } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import TableBody from "@mui/material/TableBody";
@@ -7,8 +9,6 @@ import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { useState, type ReactNode } from "react";
-import DriveFileRenameOutlineOutlinedIcon from "@mui/icons-material/DriveFileRenameOutlineOutlined";
-import RemoveCircleOutlineOutlinedIcon from "@mui/icons-material/RemoveCircleOutlineOutlined";
 import "./index.scss";
 
 export interface Column<T> {
@@ -47,7 +47,7 @@ export default function Table<T extends { id: number }>({
             <TableRow>
               {columns.map(({ id, header, align, width }) => (
                 <TableCell
-                  key={id.toString()}
+                  key={`table-head-cell-${id.toString()}`}
                   align={align || "left"}
                   sx={{ width }}
                   className="table-head__cell"
@@ -59,13 +59,21 @@ export default function Table<T extends { id: number }>({
             </TableRow>
           </TableHead>
           <TableBody>
-            {data.map((row) => {
+            {data.slice(0, 10).map((row) => {
               return (
-                <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                <TableRow
+                  hover
+                  role="checkbox"
+                  tabIndex={-1}
+                  key={`table-body-row-${row.id}`}
+                >
                   {columns.map(({ id, align, render }) => {
                     const value = row[id];
                     return (
-                      <TableCell key={id.toString()} align={align || "left"}>
+                      <TableCell
+                        key={`table-body-cell-${id.toString()}`}
+                        align={align || "left"}
+                      >
                         {render(value)}
                       </TableCell>
                     );

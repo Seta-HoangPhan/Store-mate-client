@@ -8,3 +8,7 @@ export const fetchProductsSuccess = createAction<Product[]>(
 export const fetchProductsFailed = createAction<string>(
   "product/fetchAll/failed"
 );
+
+export const toggleOpenCreateProductDrawer = createAction(
+  "product/drawer/create"
+);

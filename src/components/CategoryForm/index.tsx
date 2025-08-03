@@ -1,11 +1,12 @@
-import ArrowDropUpIcon from "@mui/icons-material/ArrowDropUp";
+import TextArea from "@components/TextArea";
+import TextField from "@components/TextField";
 import {
   Button,
   CircularProgress,
   FormControl,
   FormLabel,
-  TextField,
 } from "@mui/material";
+import { createCategory, editCategory } from "@redux/features/category/action";
 import {
   selectCategoryCreate,
   selectCategoryDetail,
@@ -13,10 +14,8 @@ import {
 } from "@redux/features/category/selector";
 import { useEffect } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import "./index.scss";
-import { useDispatch } from "react-redux";
-import { createCategory, editCategory } from "@redux/features/category/action";
 
 interface CategoryForm {
   name: string;
@@ -100,13 +99,7 @@ export default function CategoryForm({ isCreate, handleCloseDrawer }: Props) {
                 <Controller
                   control={control}
                   name="name"
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      fullWidth
-                      className="category-form__main-content__text-field"
-                    />
-                  )}
+                  render={({ field }) => <TextField {...field} />}
                 />
               </FormControl>
               <FormControl fullWidth>
@@ -116,18 +109,7 @@ export default function CategoryForm({ isCreate, handleCloseDrawer }: Props) {
                 <Controller
                   control={control}
                   name="description"
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      fullWidth
-                      rows={4}
-                      multiline
-                      slotProps={{
-                        input: { endAdornment: <ArrowDropUpIcon /> },
-                      }}
-                      className="category-form__main-content__text-area"
-                    />
-                  )}
+                  render={({ field }) => <TextArea {...field} />}
                 />
               </FormControl>
             </>

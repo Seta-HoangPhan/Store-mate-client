@@ -93,7 +93,7 @@ export default function MultiSelect({
       </ListSubheader>
       {options.map(({ id, label }) => (
         <MenuItem
-          key={id}
+          key={`multi-select-menu-item-${id}`}
           value={id}
           className="multi-select__list-item"
           onClick={() => handleToggleSelect(id)}

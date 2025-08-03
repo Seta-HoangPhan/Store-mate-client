@@ -86,12 +86,9 @@ axiosClient.interceptors.response.use(
       try {
         const refreshToken = getRefreshTokenLS();
         if (refreshToken) {
-          const res = await axiosClient.post<RefreshTokenRes>(
-            "/auth/refresh-token",
-            {
-              refreshToken,
-            }
-          );
+          const res = await axios.post<RefreshTokenRes>("/auth/refresh-token", {
+            refreshToken,
+          });
 
           const newAccessToken = res.data.data.accessToken;
           setAccessTokenLS(newAccessToken);
