@@ -9,14 +9,6 @@ export const fetchCategoriesFailed = createAction<string>(
   "categoty/fetchAll/failed"
 );
 
-export const setFilterCategories = createAction<string>("category/set-filter");
-export const removeFilterCategories = createAction<string>(
-  "category/remove-filter"
-);
-export const setFilterCategorySearch = createAction<string>(
-  "category/filter/search"
-);
-
 export const toggleOpenCreateCategoryDrawer = createAction(
   "category/drawer/create"
 );

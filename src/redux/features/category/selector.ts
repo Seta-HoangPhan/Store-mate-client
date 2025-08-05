@@ -1,14 +1,6 @@
 import type { RootState } from "@redux/store";
-import { removeAccents } from "@utils/removeAccents";
-import { createSelector } from "reselect";
 
 export const selectCategories = (state: RootState) => state.category.categories;
-
-export const selectFilterCategories = (state: RootState) =>
-  state.category.filterCategories;
-
-export const selectFilterCategorySearch = (state: RootState) =>
-  state.category.filterCategorySearch;
 
 export const selectIsOpenCreateCategoryDrawer = (state: RootState) =>
   state.category.isOpenCreateCategoryDrawer;
@@ -27,14 +19,3 @@ export const selectCategoryEdit = (state: RootState) =>
 
 export const selectCategoryDelete = (state: RootState) =>
   state.category.categoryDelete;
-
-export const selectCategoryBySearch = createSelector(
-  selectCategories,
-  selectFilterCategorySearch,
-  ({ data: categories }, search) =>
-    categories.filter((cat) =>
-      removeAccents(cat.name)
-        .toLowerCase()
-        .includes(removeAccents(search).toLowerCase())
-    )
-);

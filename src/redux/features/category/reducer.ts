@@ -1,10 +1,6 @@
 import { createReducer } from "@reduxjs/toolkit";
 import type { APIStatus, Category } from "@typings/redux";
 import {
-  getFilterCategoriesLS,
-  setFilterCategoriesLS,
-} from "@utils/localStorage/filterCategories";
-import {
   createCategory,
   createCategoryFailed,
   createCategorySuccess,
@@ -19,9 +15,6 @@ import {
   fetchCategoriesSuccess,
   fetchCategoryFailed,
   fetchCategorySuccess,
-  removeFilterCategories,
-  setFilterCategories,
-  setFilterCategorySearch,
   toggleOpenCreateCategoryDrawer,
   toggleOpenEditCategoryDrawer,
 } from "./action";
@@ -32,8 +25,6 @@ interface InitialState {
     data: Category[];
     error?: string;
   };
-  filterCategories: Category[];
-  filterCategorySearch: string;
   isOpenCreateCategoryDrawer: boolean;
   isOpenEditCategoryDrawer: boolean;
   categoryDetail: {
@@ -63,8 +54,6 @@ const initialState: InitialState = {
     status: "idle",
     data: [],
   },
-  filterCategories: getFilterCategoriesLS(),
-  filterCategorySearch: "",
   isOpenCreateCategoryDrawer: false,
   isOpenEditCategoryDrawer: false,
   categoryDetail: {
@@ -93,25 +82,6 @@ const categoryReducer = createReducer(initialState, (builder) => {
     .addCase(fetchCategoriesFailed, (state, action) => {
       state.categories.status = "rejected";
       state.categories.error = action.payload;
-    })
-    .addCase(setFilterCategories, (state, action) => {
-      const filterCat = state.categories.data.find(
-        (cat) => cat.id.toString() === action.payload
-      );
-      if (!filterCat) {
-        return;
-      }
-      state.filterCategories = [...state.filterCategories, filterCat];
-      setFilterCategoriesLS(state.filterCategories);
-    })
-    .addCase(removeFilterCategories, (state, action) => {
-      state.filterCategories = state.filterCategories.filter(
-        (cat) => cat.id.toString() !== action.payload
-      );
-      setFilterCategoriesLS(state.filterCategories);
-    })
-    .addCase(setFilterCategorySearch, (state, { payload: search }) => {
-      state.filterCategorySearch = search;
     })
     .addCase(toggleOpenCreateCategoryDrawer, (state) => {
       state.isOpenCreateCategoryDrawer = !state.isOpenCreateCategoryDrawer;

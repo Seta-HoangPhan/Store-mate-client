@@ -17,7 +17,7 @@ export interface Option {
 
 interface Props {
   options: Option[];
-  selectedOptions: Option[];
+  selectedOptions: string[];
   onSelect: (optionId: string) => void;
   onUnselect: (optionId: string) => void;
   onSearch: (search: string) => void;
@@ -30,8 +30,7 @@ export default function MultiSelect({
   onUnselect,
   onSearch,
 }: Props) {
-  const selectedOptionIds = selectedOptions.map((option) => option.id);
-  const selectedOptionIdSet = new Set(selectedOptionIds);
+  const selectedOptionIdSet = new Set(selectedOptions);
 
   const [searchText, setSearchText] = useState<string>("");
 
@@ -59,7 +58,7 @@ export default function MultiSelect({
   return (
     <Select
       multiple
-      value={selectedOptionIds}
+      value={selectedOptions}
       input={<OutlinedInput />}
       renderValue={renderValue}
       displayEmpty

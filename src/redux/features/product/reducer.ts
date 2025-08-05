@@ -1,113 +1,114 @@
+import * as catActions from "@redux/features/category/action";
 import { createReducer } from "@reduxjs/toolkit";
-import type { APIStatus, Product } from "@typings/redux";
+import type { APIStatus, Category, Product } from "@typings/redux";
+import {
+  getFilterCategoriesLS,
+  setFilterCategoriesLS,
+} from "@utils/localStorage/filterCategories";
 import * as actions from "./action";
 
 interface InitialState {
   products: {
     status: APIStatus;
-    data: Product[];
+    data: Record<string, Product[]>;
     error?: string;
   };
+  categories: Category[];
+  filterCategoryIds: number[];
+  filterCategorySearch: string;
   isOpenCreateProductDrawer: boolean;
   isOpenEditProductDrawer: boolean;
+  productCreate: {
+    status: APIStatus;
+    data?: Product;
+    error?: string;
+  };
 }
 
 const initialState: InitialState = {
   products: {
     status: "idle",
-    data: [
-      {
-        id: 1,
-        name: "Máy bơm nước Panasonic GP-200JXK",
-        description:
-          "Máy bơm nước gia đình, công suất 200W, phù hợp sử dụng cho nhà 2-3 tầng.",
-        thumbnail: "https://example.com/images/pump.jpg",
-        unitPrice: 1450000,
-        sellingPrice: 1290000,
-        quantity: 10,
-        category: {
-          id: 1,
-          name: "Thiết bị điện nước",
-        },
-      },
-      {
-        id: 2,
-        name: "Ống nhựa PVC Bình Minh 27mm",
-        description:
-          "Ống dẫn nước bằng nhựa PVC, đường kính 27mm, chịu áp lực cao.",
-        thumbnail: "https://example.com/images/pvc-pipe.jpg",
-        unitPrice: 27000,
-        sellingPrice: 25000,
-        quantity: 100,
-        category: {
-          id: 1,
-          name: "Thiết bị điện nước",
-        },
-      },
-      {
-        id: 3,
-        name: "Vòi sen nóng lạnh INAX BFV-213S",
-        description:
-          "Bộ vòi sen cao cấp, thiết kế hiện đại, chất liệu inox chống gỉ.",
-        thumbnail: "https://example.com/images/shower.jpg",
-        unitPrice: 950000,
-        sellingPrice: 875000,
-        quantity: 15,
-        category: {
-          id: 1,
-          name: "Thiết bị điện nước",
-        },
-      },
-      {
-        id: 4,
-        name: "Van khóa nước tay gạt 21mm",
-        description:
-          "Van khóa tay gạt bằng đồng, dùng trong hệ thống cấp thoát nước.",
-        thumbnail: "https://example.com/images/valve.jpg",
-        unitPrice: 35000,
-        sellingPrice: 33000,
-        quantity: 50,
-        category: {
-          id: 1,
-          name: "Thiết bị điện nước",
-        },
-      },
-      {
-        id: 5,
-        name: "Bồn cầu 2 khối Cotto C1234",
-        description:
-          "Bồn cầu 2 khối, xả mạnh, tiết kiệm nước, dễ lắp đặt và vệ sinh.",
-        thumbnail: "https://example.com/images/toilet.jpg",
-        unitPrice: 2800000,
-        sellingPrice: 2650000,
-        quantity: 7,
-        category: {
-          id: 1,
-          name: "Thiết bị điện nước",
-        },
-      },
-    ],
+    data: {},
   },
+  categories: [],
+  filterCategoryIds: getFilterCategoriesLS(),
+  filterCategorySearch: "",
   isOpenCreateProductDrawer: false,
   isOpenEditProductDrawer: false,
+  productCreate: {
+    status: "idle",
+  },
 };
 
 const productReducer = createReducer(initialState, (builder) => {
   builder
+    // fetch categories
+    .addCase(catActions.fetchCategoriesSuccess, (state, { payload }) => {
+      state.categories = payload;
+    })
+    .addCase(catActions.fetchCategoriesFailed, (state) => {
+      state.categories = [];
+    })
+
+    // filter prods by catId
+    .addCase(actions.setFilterCategoryIds, (state, { payload: id }) => {
+      const filterCat = state.categories.find((cat) => cat.id === id);
+      if (!filterCat) {
+        return;
+      }
+      state.filterCategoryIds = [...state.filterCategoryIds, filterCat.id];
+      setFilterCategoriesLS(state.filterCategoryIds);
+    })
+    .addCase(actions.removeFilterCategoryIds, (state, { payload }) => {
+      state.filterCategoryIds = state.filterCategoryIds.filter(
+        (id) => id !== payload
+      );
+      setFilterCategoriesLS(state.filterCategoryIds);
+    })
+    .addCase(actions.setFilterCategorySearch, (state, { payload: search }) => {
+      state.filterCategorySearch = search;
+    })
+
     .addCase(actions.fetchProducts, (state) => {
       state.products.status = "loading";
     })
-    .addCase(actions.fetchProductsSuccess, (state, action) => {
+    .addCase(actions.fetchProductsSuccess, (state, { payload }) => {
       state.products.status = "completed";
-      state.products.data = action.payload;
+      state.products.data = payload;
+      state.products.error = undefined;
     })
     .addCase(actions.fetchProductsFailed, (state, action) => {
       state.products.status = "rejected";
       state.products.error = action.payload;
+      state.products.data = {};
     })
 
     .addCase(actions.toggleOpenCreateProductDrawer, (state) => {
       state.isOpenCreateProductDrawer = !state.isOpenCreateProductDrawer;
+    })
+
+    // create
+    .addCase(actions.createProduct, (state) => {
+      state.productCreate.status = "loading";
+    })
+    .addCase(actions.createProductSuccess, (state, { payload: product }) => {
+      state.productCreate.status = "completed";
+      state.productCreate.data = product;
+
+      const copyProducts = {
+        ...state.products.data,
+      };
+      copyProducts[`${product.id}`] = [
+        product,
+        ...copyProducts[`${product.id}`],
+      ];
+      state.products.data = copyProducts;
+      state.productCreate.error = undefined;
+    })
+    .addCase(actions.createProductFailed, (state, { payload: err }) => {
+      state.productCreate.status = "rejected";
+      state.productCreate.data = undefined;
+      state.productCreate.error = err;
     });
 });
 

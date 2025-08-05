@@ -38,7 +38,7 @@
 
         &__icon-view {
             .icon-button {
-                background-color: #0000000a;
+                background-color: $tertiary-bg;
                 border-radius: 30%;
                 padding: 7px;
 
@@ -59,19 +59,80 @@
             margin: 0 !important;
         }
     }
+
+    &-main-content {
+        display: flex;
+        flex-direction: column;
+        gap: 40px;
+        padding-bottom: 10px;
+
+        &__table {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+
+            &-name {
+                background: $tertiary-bg;
+                width: fit-content;
+                padding: 5px 10px;
+                border-radius: 5px;
+                cursor: pointer;
+
+                &:hover {
+                    background: rgba($color: $tertiary-bg, $alpha: 0.029);
+                }
+
+                &>span {
+                    margin: 0 5px;
+                    font-size: 18px;
+                    font-weight: 600;
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                }
+            }
+        }
+
+        &__empty-table {
+            width: 100%;
+            height: 100px;
+            display: flex;
+            justify-content: center;
+            background-color: $paper-bg;
+            border-radius: 5px;
+            box-shadow: $paper-shadow;
+
+            &>img {
+                width: 200px;
+                height: 100%;
+                object-fit: cover;
+            }
+        }
+    }
 }
 
-.product-table__cell {
-    width: 100%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    
-    display: -webkit-box;
-    line-clamp: 2;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-}
+.product-table-cell {
+    &__name {
+        width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        
+        display: -webkit-box;
+        line-clamp: 2;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;   
+    }
 
-.product-description {
-    text-align: justify;
+    &__image {
+        width: 100%;
+        height: 60px;
+
+        &>img {
+            width: 60px;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 5px;
+            box-shadow: $paper-shadow;
+        }
+    }
 }

@@ -9,6 +9,7 @@ import {
 import axios, { AxiosError, type RawAxiosRequestConfig } from "axios";
 import humps from "humps";
 import settings from "./settings";
+import qs from "qs";
 
 let isFreshingToken = false;
 let failedRequestQueue: {
@@ -33,6 +34,10 @@ export const axiosClient = axios.create({
   headers: {
     "Content-Type": "application/json",
   },
+  paramsSerializer: (params) => {
+    const decamelizedParams = humps.decamelizeKeys(params);
+    return qs.stringify(decamelizedParams, { arrayFormat: "repeat" });
+  },
   timeout: 10000,
 });
 
@@ -41,7 +46,14 @@ axiosClient.interceptors.request.use((config) => {
   if (token) {
     config.headers["Authorization"] = `Bearer ${token}`;
   }
-  if (config.data) {
+  if (config.data instanceof FormData) {
+    const newFormData = new FormData();
+    for (const [key, value] of config.data.entries()) {
+      const newKey = humps.decamelize(key);
+      newFormData.append(newKey, value);
+    }
+    config.data = newFormData;
+  } else if (config.data) {
     config.data = humps.decamelizeKeys(config.data);
   }
   if (config.params) {
@@ -131,12 +143,14 @@ export const axiosGet = async <T>({
 export const axiosPost = async <T>({
   path,
   data,
+  configs,
 }: {
   path: string;
-  data?: Record<string, unknown>;
+  data?: Record<string, unknown> | FormData;
+  configs?: AxiosRequestConfig;
 }): Promise<[T | null, AxiosError | null]> => {
   try {
-    const res = await axiosClient.post(path, data);
+    const res = await axiosClient.post(path, data, configs);
     return [res.data.data, null];
   } catch (error) {
     if (error instanceof AxiosError) {

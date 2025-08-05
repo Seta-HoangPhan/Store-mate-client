@@ -1,20 +1,18 @@
-import type { Category } from "@typings/redux";
-
 const STORAGE_KEY = "filterCategories";
 
-export const getFilterCategoriesLS = (): Category[] => {
-  const cats = localStorage.getItem(STORAGE_KEY);
+export const getFilterCategoriesLS = (): number[] => {
+  const catIds = localStorage.getItem(STORAGE_KEY);
   try {
-    if (!cats) {
+    if (!catIds) {
       return [];
     }
-    return JSON.parse(cats);
+    return JSON.parse(catIds);
   } catch (error) {
     console.error("parse filter categories failed: ", error);
     throw new Error("Some thing went wrong!");
   }
 };
 
-export const setFilterCategoriesLS = (cats: Category[]) => {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(cats));
+export const setFilterCategoriesLS = (catIds: number[]) => {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(catIds));
 };

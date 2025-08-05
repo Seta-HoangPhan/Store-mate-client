@@ -16,12 +16,12 @@ export interface Category {
 export interface Product {
   id: number;
   name: string;
-  description: string;
-  thumbnail: string;
+  description?: string;
+  thumbnail?: string;
   unitPrice: number;
   sellingPrice: number;
   quantity: number;
-  category: {
+  category?: {
     id: number;
     name: string;
   };

@@ -18,7 +18,6 @@ function* getUserProfile() {
     let reTry = 0;
 
     while (reTry < 3) {
-      console.log("check12 re", reTry);
       const [data]: ApiResponse<User> = yield call(service.getProfile);
       if (data) {
         yield put(action.fetchUserSuccess(data));

@@ -1,12 +1,21 @@
-import type { CategoryRes } from "@typings/apiResponse";
-import { axiosGet } from "../../../axiosClient";
-import { get } from "lodash";
+import { axiosGet, axiosPost } from "../../../axiosClient";
+import type { Product } from "@typings/redux";
 
-export const fetchAllProducts = async () => {
-  const [data, err] = await axiosGet<CategoryRes>("/products");
-  if (data) {
-    return [data.data, null];
-  } else {
-    return [null, get(err, "detail", "Fetch products failed!")];
-  }
+export const fetchProducts = async (catIds: number[]) => {
+  return await axiosGet<Product[]>({
+    path: "/products",
+    params: { catIds },
+  });
+};
+
+export const createProduct = async (formData: FormData) => {
+  return await axiosPost<Product>({
+    path: "/products",
+    data: formData,
+    configs: {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    },
+  });
 };
