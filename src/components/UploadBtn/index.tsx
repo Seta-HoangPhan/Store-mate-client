@@ -17,7 +17,7 @@ export default function UploadBtn({ onChange }: Props) {
       startIcon={<CloudUploadIcon />}
       className="upload-btn"
     >
-      Upload image
+      Chọn ảnh trong máy
       <input type="file" onChange={onChange} />
     </Button>
   );

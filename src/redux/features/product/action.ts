@@ -30,3 +30,18 @@ export const createProductSuccess = createAction<Product>(
 export const createProductFailed = createAction<string>(
   "product/create/failed"
 );
+
+export const toggleOpenEditProductDrawer = createAction<number | undefined>(
+  "product/drawer/edit"
+);
+export const fetchProductById = createAction<number>("product/fetch-by-id");
+export const fetchProductByIdSuccess = createAction<Product>(
+  "product/fetch-by-id/success"
+);
+export const fetchProductByIdFailed = createAction<string>(
+  "product/fetch-by-id/failed"
+);
+
+export const editProduct = createAction<FormData>("product/edit");
+export const editProductSuccess = createAction<Product>("product/edit/success");
+export const editProductFailed = createAction<string>("product/edit/failed");

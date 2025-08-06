@@ -1,10 +1,10 @@
+import type { Category } from "@typings/redux";
 import {
   axiosDelete,
   axiosGet,
   axiosPost,
   axiosPut,
 } from "../../../axiosClient";
-import type { Category } from "@typings/redux";
 
 export const fetchAllCategories = async () => {
   return await axiosGet<Category[]>({ path: "/categories" });

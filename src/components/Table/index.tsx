@@ -1,5 +1,6 @@
 import DriveFileRenameOutlineOutlinedIcon from "@mui/icons-material/DriveFileRenameOutlineOutlined";
 import RemoveCircleOutlineOutlinedIcon from "@mui/icons-material/RemoveCircleOutlineOutlined";
+import PageviewOutlinedIcon from "@mui/icons-material/PageviewOutlined";
 import { Collapse, IconButton, Table as MuiTable } from "@mui/material";
 import Paper from "@mui/material/Paper";
 import TableBody from "@mui/material/TableBody";
@@ -10,6 +11,7 @@ import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import { useState, type ReactNode } from "react";
 import "./index.scss";
+import Tooltip from "@components/Tooltip";
 
 export interface Column<T> {
   id: keyof T;
@@ -23,8 +25,9 @@ interface Props<T> {
   data: T[];
   columns: Column<T>[];
   hasAction?: {
-    onEdit: (rowId: number) => void;
-    onDelete: (rowId: number) => void;
+    onDetails?: (rowId: number) => void;
+    onEdit?: (rowId: number) => void;
+    onDelete?: (rowId: number) => void;
   };
   open?: boolean;
 }
@@ -86,12 +89,33 @@ export default function Table<T extends { id: number }>({
                         align="center"
                         className="table-body__cell-action"
                       >
-                        <IconButton onClick={() => hasAction.onEdit(row.id)}>
-                          <DriveFileRenameOutlineOutlinedIcon color="primary" />
-                        </IconButton>
-                        <IconButton onClick={() => hasAction.onDelete(row.id)}>
-                          <RemoveCircleOutlineOutlinedIcon color="error" />
-                        </IconButton>
+                        {hasAction.onDetails && (
+                          <Tooltip title="Thông tin chi tiết">
+                            <IconButton
+                              onClick={() => hasAction.onDetails?.(row.id)}
+                            >
+                              <PageviewOutlinedIcon color="success" />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                        {hasAction.onEdit && (
+                          <Tooltip title="chỉnh sửa thông tin">
+                            <IconButton
+                              onClick={() => hasAction.onEdit?.(row.id)}
+                            >
+                              <DriveFileRenameOutlineOutlinedIcon color="primary" />
+                            </IconButton>
+                          </Tooltip>
+                        )}
+                        {hasAction.onDelete && (
+                          <Tooltip title="xóa">
+                            <IconButton
+                              onClick={() => hasAction.onDelete?.(row.id)}
+                            >
+                              <RemoveCircleOutlineOutlinedIcon color="error" />
+                            </IconButton>
+                          </Tooltip>
+                        )}
                       </TableCell>
                     )}
                   </TableRow>

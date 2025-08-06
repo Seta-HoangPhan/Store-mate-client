@@ -164,12 +164,14 @@ export const axiosPost = async <T>({
 export const axiosPut = async <T>({
   path,
   data,
+  configs,
 }: {
   path: string;
-  data?: Record<string, unknown>;
+  data?: Record<string, unknown> | FormData;
+  configs?: AxiosRequestConfig;
 }): Promise<[T | null, AxiosError | null]> => {
   try {
-    const res = await axiosClient.put(path, data);
+    const res = await axiosClient.put(path, data, configs);
     return [res.data.data, null];
   } catch (error) {
     if (error instanceof AxiosError) {

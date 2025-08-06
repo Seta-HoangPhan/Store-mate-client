@@ -17,11 +17,13 @@ import {
 import { fetchCategories } from "@redux/features/category/action";
 import { selectCategories } from "@redux/features/category/selector";
 import {
+  fetchProductById,
   fetchProducts,
   removeFilterCategoryIds,
   setFilterCategoryIds,
   setFilterCategorySearch,
   toggleOpenCreateProductDrawer,
+  toggleOpenEditProductDrawer,
 } from "@redux/features/product/action";
 import {
   selectCategoryBySearch,
@@ -33,6 +35,7 @@ import { convertToOptions } from "@utils/convertToOptions";
 import { formatVnd } from "@utils/formatVnd";
 import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import ProductDetails from "./Details";
 import "./index.scss";
 export type ProductView = "list" | "grid";
 
@@ -106,6 +109,7 @@ export default function Product() {
   const [tableOpenMapper, setTableOpenMapper] = useState<
     Record<string, boolean>
   >({});
+  const [openDetailDialog, setOpenDetailDialog] = useState<boolean>(false);
 
   const selectedCategoryIds = useMemo(() => {
     return filterCategoryIds.map((id) => id.toString());
@@ -117,11 +121,11 @@ export default function Product() {
 
   useEffect(() => {
     dispatch(fetchProducts(filterCategoryIds));
-    for (const id of Object.keys(tableOpenMapper)) {
-      if (!filterCategoryIds.includes(Number(id))) {
+    for (const key of Object.keys(tableOpenMapper)) {
+      if (!filterCategoryIds.includes(extraCategoryId(key))) {
         setTableOpenMapper((prev) => ({
           ...prev,
-          [id]: true,
+          [key]: true,
         }));
       }
     }
@@ -129,11 +133,15 @@ export default function Product() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dispatch, filterCategoryIds]);
 
+  const extraCategoryId = (key: string) => {
+    return Number(key.split("-")[1]);
+  };
+
   useEffect(() => {
     for (const cat of categories) {
       setTableOpenMapper((prev) => ({
         ...prev,
-        [cat.id.toString()]: true,
+        [`cat-${cat.id}`]: true,
       }));
     }
   }, [categories]);
@@ -158,14 +166,14 @@ export default function Product() {
     dispatch(toggleOpenCreateProductDrawer());
   };
 
-  const renderCategoryName = (id: string, length: number) => {
-    const category = categories.find((cat) => cat.id === Number(id));
+  const renderCategoryName = (key: string, length: number) => {
+    const category = categories.find((cat) => cat.id === extraCategoryId(key));
     if (!category) return null;
 
     const handleClick = () => {
       setTableOpenMapper((prev) => ({
         ...prev,
-        [id]: !prev[id],
+        [key]: !prev[key],
       }));
     };
 
@@ -173,15 +181,24 @@ export default function Product() {
       <div className="product-main-content__table-name" onClick={handleClick}>
         <Typography component="span" color="secondary">
           {category?.name} - {`(${length})`}
-          <ArrowIcon open={tableOpenMapper[id]} />
+          <ArrowIcon open={tableOpenMapper[key]} />
         </Typography>
       </div>
     );
   };
 
+  const handleEditProduct = (id: number) => {
+    dispatch(toggleOpenEditProductDrawer(id));
+  };
+
+  const handleViewDetails = (id: number) => {
+    dispatch(fetchProductById(id));
+    setOpenDetailDialog(true);
+  };
+
   const hasAction = {
-    onDelete: () => {},
-    onEdit: () => {},
+    onDetails: handleViewDetails,
+    onEdit: handleEditProduct,
   };
 
   return (
@@ -235,6 +252,10 @@ export default function Product() {
           </div>
         ))}
       </div>
+      <ProductDetails
+        open={openDetailDialog}
+        onClose={() => setOpenDetailDialog(false)}
+      />
     </div>
   );
 }

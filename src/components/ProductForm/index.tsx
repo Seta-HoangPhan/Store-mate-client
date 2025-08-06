@@ -4,20 +4,26 @@ import TextArea from "@components/TextArea";
 import TextField from "@components/TextField";
 import UploadBtn from "@components/UploadBtn";
 import CloseIcon from "@mui/icons-material/Close";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
 import {
   Button,
   CircularProgress,
   FormControl,
   FormLabel,
   IconButton,
+  Menu,
   MenuItem,
 } from "@mui/material";
 import { selectCategories } from "@redux/features/category/selector";
-import { createProduct } from "@redux/features/product/action";
-import { selectProductCreate } from "@redux/features/product/selector";
+import { createProduct, editProduct } from "@redux/features/product/action";
+import {
+  selectProductCreate,
+  selectProductDetail,
+  selectProductEdit,
+} from "@redux/features/product/selector";
 import { cleanFormFieldValue } from "@utils/convertToNumberObj";
 import { formatVnd } from "@utils/formatVnd";
-import { useState, type ChangeEvent } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import {
   Controller,
   useForm,
@@ -39,6 +45,7 @@ interface FormValue {
 interface Props {
   isCreate?: boolean;
   handleCloseDrawer: () => void;
+  drawerRef?: React.RefObject<null>;
 }
 
 export default function ProductForm({ isCreate, handleCloseDrawer }: Props) {
@@ -46,29 +53,66 @@ export default function ProductForm({ isCreate, handleCloseDrawer }: Props) {
 
   const { data: categories } = useSelector(selectCategories);
   const { status: statusCreate } = useSelector(selectProductCreate);
+  const { data: productDetail, status: statusDetail } =
+    useSelector(selectProductDetail);
+  const { status: statusEdit } = useSelector(selectProductEdit);
 
   const [thumbnail, setThumbnail] = useState<File | null>(null);
   const [thumbnailPreview, setThumbnailPreview] = useState<string>("");
+  const [isChangeThumbnail, setIsChangeThumbnail] = useState<boolean>(false);
+  const [thumnailMenuAnchor, setThumbnailMenuAnchor] = useState<Element | null>(
+    null
+  );
 
   const {
     control,
     handleSubmit,
+    reset,
     formState: { isDirty, errors },
   } = useForm<FormValue>();
   const [name, unitPrice, sellingPrice, quantity] = useWatch({
     control,
     name: ["name", "unitPrice", "sellingPrice", "quantity"],
   });
+
+  const isValidRequireField =
+    name &&
+    unitPrice &&
+    unitPrice > 0 &&
+    sellingPrice &&
+    sellingPrice > 0 &&
+    quantity &&
+    quantity > 0;
   const enableSubmitBtn =
-    (isCreate &&
-      name &&
-      unitPrice &&
-      unitPrice > 0 &&
-      sellingPrice &&
-      sellingPrice > 0 &&
-      quantity &&
-      quantity > 0) ||
-    (!isCreate && isDirty && name);
+    (isCreate && isValidRequireField) ||
+    (!isCreate && (isDirty || isChangeThumbnail) && isValidRequireField);
+
+  useEffect(() => {
+    if (!isCreate && productDetail) {
+      reset({
+        name: productDetail.name,
+        description: productDetail.description,
+        unitPrice: productDetail.unitPrice,
+        sellingPrice: productDetail.sellingPrice,
+        quantity: productDetail.quantity,
+        categoryId: productDetail.category?.id,
+      });
+      setThumbnailPreview(productDetail.thumbnail || productImage);
+    }
+  }, [isCreate, productDetail, reset]);
+
+  useEffect(() => {
+    const isClose =
+      (isCreate &&
+        (statusCreate === "completed" || statusCreate === "rejected")) ||
+      (!isCreate && (statusEdit === "completed" || statusEdit === "rejected"));
+
+    if (isClose) {
+      handleCloseDrawer();
+    }
+  }, [statusCreate, handleCloseDrawer, isCreate, statusEdit]);
+
+  const handleCloseThumbnailMenu = () => setThumbnailMenuAnchor(null);
 
   const handleChangeThumbnail = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -77,6 +121,7 @@ export default function ProductForm({ isCreate, handleCloseDrawer }: Props) {
     }
 
     setThumbnail(file);
+    setIsChangeThumbnail(true);
     const reader = new FileReader();
     reader.onloadend = () => {
       if (typeof reader.result === "string") setThumbnailPreview(reader.result);
@@ -87,6 +132,15 @@ export default function ProductForm({ isCreate, handleCloseDrawer }: Props) {
   const handleRemoveThumbnail = () => {
     setThumbnail(null);
     setThumbnailPreview("");
+    handleCloseThumbnailMenu();
+    setIsChangeThumbnail(true);
+  };
+
+  const handleBackDetailThumbnail = () => {
+    setThumbnail(null);
+    setThumbnailPreview(productDetail?.thumbnail || productImage);
+    handleCloseThumbnailMenu();
+    setIsChangeThumbnail(false);
   };
 
   const handleChangeNumberInput = (
@@ -121,14 +175,14 @@ export default function ProductForm({ isCreate, handleCloseDrawer }: Props) {
       formData.append("thumbnail", thumbnail);
     }
 
-    dispatch(createProduct(formData));
+    dispatch(isCreate ? createProduct(formData) : editProduct(formData));
   };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="product-form">
       <div className="product-form-wrapper">
         <div className="product-form__main-content">
-          {!isCreate ? (
+          {statusDetail === "loading" ? (
             <div className="product-form__main-content__loading">
               <CircularProgress />
             </div>
@@ -170,10 +224,35 @@ export default function ProductForm({ isCreate, handleCloseDrawer }: Props) {
                 </FormControl>
                 <div className="product-form__upload-image__preview">
                   <img src={thumbnailPreview || productImage} alt="123" />
-                  {thumbnail && (
+                  {thumbnail && isCreate && (
                     <IconButton onClick={handleRemoveThumbnail}>
                       <CloseIcon />
                     </IconButton>
+                  )}
+                  {!isCreate && (
+                    <>
+                      <IconButton
+                        onClick={(e) => setThumbnailMenuAnchor(e.currentTarget)}
+                      >
+                        <MoreVertIcon />
+                      </IconButton>
+                      <Menu
+                        open={!!thumnailMenuAnchor}
+                        anchorEl={thumnailMenuAnchor}
+                        onClose={handleCloseThumbnailMenu}
+                      >
+                        {thumbnailPreview && (
+                          <MenuItem onClick={handleRemoveThumbnail}>
+                            Loại bỏ hình ảnh
+                          </MenuItem>
+                        )}
+                        {thumbnailPreview !== productDetail?.thumbnail && (
+                          <MenuItem onClick={handleBackDetailThumbnail}>
+                            Giữ hình ảnh ban đầu
+                          </MenuItem>
+                        )}
+                      </Menu>
+                    </>
                   )}
                 </div>
               </div>
@@ -263,7 +342,7 @@ export default function ProductForm({ isCreate, handleCloseDrawer }: Props) {
             disabled={!enableSubmitBtn}
             className="drawer-footer__button"
           >
-            {statusCreate === "loading" ? (
+            {statusCreate === "loading" || statusEdit === "loading" ? (
               <CircularProgress color="inherit" size={30} />
             ) : isCreate ? (
               "Tạo Mới"

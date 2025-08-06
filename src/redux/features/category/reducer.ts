@@ -1,23 +1,6 @@
 import { createReducer } from "@reduxjs/toolkit";
 import type { APIStatus, Category } from "@typings/redux";
-import {
-  createCategory,
-  createCategoryFailed,
-  createCategorySuccess,
-  deleteCategory,
-  deleteCategoryFailed,
-  deleteCategorySuccess,
-  editCategory,
-  editCategoryFailed,
-  editCategorySuccess,
-  fetchCategories,
-  fetchCategoriesFailed,
-  fetchCategoriesSuccess,
-  fetchCategoryFailed,
-  fetchCategorySuccess,
-  toggleOpenCreateCategoryDrawer,
-  toggleOpenEditCategoryDrawer,
-} from "./action";
+import * as actions from "./action";
 
 interface InitialState {
   categories: {
@@ -72,42 +55,53 @@ const initialState: InitialState = {
 
 const categoryReducer = createReducer(initialState, (builder) => {
   builder
-    .addCase(fetchCategories, (state) => {
+    .addCase(actions.fetchCategories, (state) => {
       state.categories.status = "loading";
     })
-    .addCase(fetchCategoriesSuccess, (state, action) => {
+    .addCase(actions.fetchCategoriesSuccess, (state, action) => {
       state.categories.status = "completed";
       state.categories.data = action.payload;
     })
-    .addCase(fetchCategoriesFailed, (state, action) => {
+    .addCase(actions.fetchCategoriesFailed, (state, action) => {
       state.categories.status = "rejected";
       state.categories.error = action.payload;
     })
-    .addCase(toggleOpenCreateCategoryDrawer, (state) => {
+    .addCase(actions.toggleOpenCreateCategoryDrawer, (state) => {
       state.isOpenCreateCategoryDrawer = !state.isOpenCreateCategoryDrawer;
+      if (state.isOpenCreateCategoryDrawer) {
+        state.categoryCreate = {
+          status: "idle",
+        };
+      }
     })
 
     // fetch one
-    .addCase(toggleOpenEditCategoryDrawer, (state, { payload: catId }) => {
-      state.isOpenEditCategoryDrawer = !state.isOpenEditCategoryDrawer;
-      if (catId) {
-        state.categoryDetail.status = "loading";
+    .addCase(
+      actions.toggleOpenEditCategoryDrawer,
+      (state, { payload: catId }) => {
+        state.isOpenEditCategoryDrawer = !state.isOpenEditCategoryDrawer;
+        if (catId) {
+          state.categoryDetail.status = "loading";
+          state.categoryEdit = {
+            status: "idle",
+          };
+        }
       }
-    })
-    .addCase(fetchCategorySuccess, (state, { payload: category }) => {
+    )
+    .addCase(actions.fetchCategorySuccess, (state, { payload: category }) => {
       state.categoryDetail.status = "completed";
       state.categoryDetail.data = category;
     })
-    .addCase(fetchCategoryFailed, (state, { payload: error }) => {
+    .addCase(actions.fetchCategoryFailed, (state, { payload: error }) => {
       state.categoryDetail.status = "rejected";
       state.categoryDetail.error = error;
     })
 
     // create
-    .addCase(createCategory, (state) => {
+    .addCase(actions.createCategory, (state) => {
       state.categoryCreate.status = "loading";
     })
-    .addCase(createCategorySuccess, (state, { payload: category }) => {
+    .addCase(actions.createCategorySuccess, (state, { payload: category }) => {
       state.categoryCreate.status = "completed";
       state.categoryCreate.data = category;
       state.categories.data = [
@@ -115,16 +109,16 @@ const categoryReducer = createReducer(initialState, (builder) => {
         ...state.categories.data,
       ];
     })
-    .addCase(createCategoryFailed, (state, { payload: error }) => {
+    .addCase(actions.createCategoryFailed, (state, { payload: error }) => {
       state.categoryCreate.status = "rejected";
       state.categoryDetail.error = error;
     })
 
     // edit
-    .addCase(editCategory, (state) => {
+    .addCase(actions.editCategory, (state) => {
       state.categoryEdit.status = "loading";
     })
-    .addCase(editCategorySuccess, (state, { payload: category }) => {
+    .addCase(actions.editCategorySuccess, (state, { payload: category }) => {
       state.categoryEdit.status = "completed";
       state.categoryEdit.data = category;
       state.categories.data = state.categories.data.map((cat) => {
@@ -132,23 +126,23 @@ const categoryReducer = createReducer(initialState, (builder) => {
         return category;
       });
     })
-    .addCase(editCategoryFailed, (state, { payload: error }) => {
+    .addCase(actions.editCategoryFailed, (state, { payload: error }) => {
       state.categoryEdit.status = "rejected";
       state.categoryEdit.error = error;
     })
 
     // delete
-    .addCase(deleteCategory, (state) => {
+    .addCase(actions.deleteCategory, (state) => {
       state.categoryDelete.status = "loading";
     })
-    .addCase(deleteCategorySuccess, (state, { payload: category }) => {
+    .addCase(actions.deleteCategorySuccess, (state, { payload: category }) => {
       state.categoryDelete.status = "completed";
       state.categoryDelete.data = category;
       state.categories.data = state.categories.data.filter(
         (cat) => cat.id !== category.id
       );
     })
-    .addCase(deleteCategoryFailed, (state, { payload: error }) => {
+    .addCase(actions.deleteCategoryFailed, (state, { payload: error }) => {
       state.categoryDelete.status = "rejected";
       state.categoryDelete.error = error;
     });

@@ -12,15 +12,22 @@ import {
 import { useEffect, useState, type ReactElement } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "./index.scss";
-import { selectOpenCreareProductDrawer } from "@redux/features/product/selector";
+import {
+  selectOpenCreareProductDrawer,
+  selectOpenEditProductDrawer,
+} from "@redux/features/product/selector";
 import ProductForm from "@components/ProductForm";
-import { toggleOpenCreateProductDrawer } from "@redux/features/product/action";
+import {
+  toggleOpenCreateProductDrawer,
+  toggleOpenEditProductDrawer,
+} from "@redux/features/product/action";
 
 const DRAWER_WIDTH = 400;
 const titles = {
   createCategory: "Tạo mới loại sản phẩm",
   editCategory: "Chỉnh sửa loại sản phẩm",
   createProduct: "Tạo mới sản phẩm",
+  editProduct: "Chỉnh sửa sản phẩm",
 } as const;
 type Title = keyof typeof titles;
 
@@ -31,12 +38,16 @@ export default function LayoutDrawer() {
   const isOpenEditCategory = useSelector(selectIsOpenEditCategoryDrawer);
 
   const isOpenCreateProduct = useSelector(selectOpenCreareProductDrawer);
+  const isOpenEditProduct = useSelector(selectOpenEditProductDrawer);
 
   const [title, setTitle] = useState<Title>("createCategory");
   const [component, setComponent] = useState<ReactElement | null>(null);
 
   const open =
-    isOpenCreateCategory || isOpenEditCategory || isOpenCreateProduct;
+    isOpenCreateCategory ||
+    isOpenEditCategory ||
+    isOpenCreateProduct ||
+    isOpenEditProduct;
 
   useEffect(() => {
     switch (true) {
@@ -56,11 +67,20 @@ export default function LayoutDrawer() {
           <ProductForm isCreate handleCloseDrawer={handleCloseDrawer} />
         );
         break;
+      case isOpenEditProduct:
+        setTitle("editProduct");
+        setComponent(<ProductForm handleCloseDrawer={handleCloseDrawer} />);
+        break;
       default:
         break;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isOpenCreateCategory, isOpenEditCategory, isOpenCreateProduct]);
+  }, [
+    isOpenCreateCategory,
+    isOpenEditCategory,
+    isOpenCreateProduct,
+    isOpenEditProduct,
+  ]);
 
   const handleCloseDrawer = () => {
     switch (true) {
@@ -72,6 +92,9 @@ export default function LayoutDrawer() {
         break;
       case isOpenCreateProduct:
         dispatch(toggleOpenCreateProductDrawer());
+        break;
+      case isOpenEditProduct:
+        dispatch(toggleOpenEditProductDrawer());
         break;
       default:
         break;

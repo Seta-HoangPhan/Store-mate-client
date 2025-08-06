@@ -1,14 +1,24 @@
 import type { RootState } from "@redux/store";
+import type { Product } from "@typings/redux";
 import { removeAccents } from "@utils/removeAccents";
 import { createSelector } from "reselect";
 
 export const selectProducts = (state: RootState) => state.product.products;
 
+export const selectProductDetail = (state: RootState) =>
+  state.product.productDetail;
+
 export const selectOpenCreareProductDrawer = (state: RootState) =>
   state.product.isOpenCreateProductDrawer;
 
+export const selectOpenEditProductDrawer = (state: RootState) =>
+  state.product.isOpenEditProductDrawer;
+
 export const selectProductCreate = (state: RootState) =>
   state.product.productCreate;
+
+export const selectProductEdit = (state: RootState) =>
+  state.product.productEdit;
 
 export const selectFilterCategoryIds = (state: RootState) =>
   state.product.filterCategoryIds;
@@ -31,16 +41,17 @@ export const selectCategoryBySearch = createSelector(
 
 export const selectSortedProductMapper = createSelector(
   selectProducts,
-  ({ data: productMapper }) => {
-    const sortedEntries = Object.entries(productMapper).sort(
-      ([keyA, a], [keyB, b]) => {
+  ({ data: productMapper }: { data: Record<string, Product[]> }) => {
+    const sortedEntries: [string, Product[]][] = Object.entries(productMapper)
+      .sort(([keyA, a], [keyB, b]) => {
         if (a.length !== b.length) {
           return b.length - a.length;
         }
         return keyA.localeCompare(keyB);
-      }
-    );
+      })
+      .map(([key, value]) => [`cat-${key}`, value]);
 
-    return new Map(sortedEntries);
+    const result: Record<string, Product[]> = Object.fromEntries(sortedEntries);
+    return result;
   }
 );

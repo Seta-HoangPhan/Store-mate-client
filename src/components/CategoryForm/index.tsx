@@ -58,8 +58,9 @@ export default function CategoryForm({ isCreate, handleCloseDrawer }: Props) {
 
   useEffect(() => {
     const isClose =
-      (statusCreate !== "loading" && isCreate) ||
-      (!isCreate && statusEdit !== "loading");
+      (isCreate &&
+        (statusCreate === "completed" || statusCreate === "rejected")) ||
+      (!isCreate && (statusEdit === "completed" || statusEdit === "rejected"));
 
     if (isClose) {
       handleCloseDrawer();
