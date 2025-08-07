@@ -2,7 +2,7 @@ import * as actions from "@redux/features/product/action";
 import type { InitialState as ProductState } from "@redux/features/product/reducer";
 import { selectProductDetail } from "@redux/features/product/selector";
 import type { ApiResponse } from "@typings/apiResponse";
-import type { Product } from "@typings/redux";
+import type { Product, ProductDetail } from "@typings/redux";
 import { all, call, delay, put, select, takeEvery } from "redux-saga/effects";
 import * as service from "./service";
 
@@ -51,7 +51,7 @@ function* handleFetchProductDetail({
   typeof actions.fetchProductById | typeof actions.toggleOpenEditProductDrawer
 >) {
   if (!id) return;
-  const [data, err]: ApiResponse<Product> = yield call(
+  const [data, err]: ApiResponse<ProductDetail> = yield call(
     service.fetchProductById,
     id
   );

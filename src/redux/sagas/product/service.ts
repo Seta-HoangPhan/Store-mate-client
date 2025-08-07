@@ -1,4 +1,4 @@
-import type { Product } from "@typings/redux";
+import type { Product, ProductDetail } from "@typings/redux";
 import { axiosGet, axiosPost, axiosPut } from "../../../axiosClient";
 
 export const fetchProducts = async (catIds: number[]) => {
@@ -9,7 +9,7 @@ export const fetchProducts = async (catIds: number[]) => {
 };
 
 export const fetchProductById = async (id: number) => {
-  return await axiosGet<Product>({
+  return await axiosGet<ProductDetail>({
     path: `/products/${id}`,
   });
 };

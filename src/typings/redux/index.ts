@@ -13,16 +13,50 @@ export interface Category {
   products: Product[];
 }
 
+export interface ProductDetail extends Product {
+  purchaseProducts: PurchaseProduct[];
+}
+
 export interface Product {
   id: number;
   name: string;
   description?: string;
   thumbnail?: string;
-  unitPrice: number;
   sellingPrice: number;
   quantity: number;
   category?: {
     id: number;
     name: string;
   };
+}
+
+export interface Supplier {
+  id: number;
+  name: string;
+  email?: string;
+  address: string;
+}
+
+export interface Purchase {
+  id: number;
+  supplier: Supplier;
+  importDate: string;
+  purchaseProducts: PurchaseProduct[];
+}
+
+export interface PurchaseProduct {
+  id: number;
+  product: {
+    id: number;
+    name: string;
+  };
+  purchase: {
+    id: number;
+    supplier: Supplier;
+    importDate: string;
+  };
+  unitPrice: number;
+  netPrice: number;
+  discount: number;
+  quantity: number;
 }

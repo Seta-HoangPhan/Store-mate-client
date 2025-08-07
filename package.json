@@ -17,6 +17,7 @@
     "@reduxjs/toolkit": "^2.8.2",
     "axios": "^1.11.0",
     "classnames": "^2.5.1",
+    "dayjs": "^1.11.13",
     "humps": "^2.0.1",
     "libphonenumber-js": "^1.12.10",
     "lodash": "^4.17.21",

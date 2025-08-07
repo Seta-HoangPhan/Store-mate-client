@@ -1,5 +1,5 @@
 import { createAction } from "@reduxjs/toolkit";
-import type { Product } from "@typings/redux";
+import type { Product, ProductDetail } from "@typings/redux";
 
 export const setFilterCategoryIds = createAction<number>(
   "product/filter-category/set"
@@ -35,7 +35,7 @@ export const toggleOpenEditProductDrawer = createAction<number | undefined>(
   "product/drawer/edit"
 );
 export const fetchProductById = createAction<number>("product/fetch-by-id");
-export const fetchProductByIdSuccess = createAction<Product>(
+export const fetchProductByIdSuccess = createAction<ProductDetail>(
   "product/fetch-by-id/success"
 );
 export const fetchProductByIdFailed = createAction<string>(

@@ -37,6 +37,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import ProductDetails from "./Details";
 import "./index.scss";
+
 export type ProductView = "list" | "grid";
 
 const columns: Column<Product>[] = [
@@ -49,7 +50,7 @@ const columns: Column<Product>[] = [
           <span>{value}</span>
         </div>
       ),
-    width: "15%",
+    width: "25%",
   },
   {
     id: "thumbnail",
@@ -60,15 +61,7 @@ const columns: Column<Product>[] = [
           <img src={value || productImage} alt="thumbnail" />
         </div>
       ),
-    width: "20%",
-    align: "center",
-  },
-  {
-    id: "unitPrice",
-    header: "Giá nhập (VND)",
-    render: (value) =>
-      typeof value === "number" && <span>{formatVnd(value)}</span>,
-    width: "20%",
+    width: "25%",
     align: "center",
   },
   {
@@ -83,7 +76,7 @@ const columns: Column<Product>[] = [
     id: "quantity",
     header: "Số lượng",
     render: (value) => typeof value === "number" && <span>{value}</span>,
-    width: "10%",
+    width: "20%",
     align: "center",
   },
 ];

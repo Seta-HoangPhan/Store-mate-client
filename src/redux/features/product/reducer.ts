@@ -1,6 +1,11 @@
 import * as catActions from "@redux/features/category/action";
 import { createReducer } from "@reduxjs/toolkit";
-import type { APIStatus, Category, Product } from "@typings/redux";
+import type {
+  APIStatus,
+  Category,
+  Product,
+  ProductDetail,
+} from "@typings/redux";
 import {
   getFilterCategoriesLS,
   setFilterCategoriesLS,
@@ -15,7 +20,7 @@ export interface InitialState {
   };
   productDetail: {
     status: APIStatus;
-    data?: Product;
+    data?: ProductDetail;
     error?: string;
   };
   categories: Category[];

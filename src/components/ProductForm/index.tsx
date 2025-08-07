@@ -36,7 +36,6 @@ import "./index.scss";
 interface FormValue {
   name: string;
   description: string;
-  unitPrice: number;
   sellingPrice: number;
   quantity: number;
   categoryId: number;
@@ -70,19 +69,13 @@ export default function ProductForm({ isCreate, handleCloseDrawer }: Props) {
     reset,
     formState: { isDirty, errors },
   } = useForm<FormValue>();
-  const [name, unitPrice, sellingPrice, quantity] = useWatch({
+  const [name, sellingPrice, quantity] = useWatch({
     control,
-    name: ["name", "unitPrice", "sellingPrice", "quantity"],
+    name: ["name", "sellingPrice", "quantity"],
   });
 
   const isValidRequireField =
-    name &&
-    unitPrice &&
-    unitPrice > 0 &&
-    sellingPrice &&
-    sellingPrice > 0 &&
-    quantity &&
-    quantity > 0;
+    name && sellingPrice && sellingPrice > 0 && quantity && quantity > 0;
   const enableSubmitBtn =
     (isCreate && isValidRequireField) ||
     (!isCreate && (isDirty || isChangeThumbnail) && isValidRequireField);
@@ -92,7 +85,6 @@ export default function ProductForm({ isCreate, handleCloseDrawer }: Props) {
       reset({
         name: productDetail.name,
         description: productDetail.description,
-        unitPrice: productDetail.unitPrice,
         sellingPrice: productDetail.sellingPrice,
         quantity: productDetail.quantity,
         categoryId: productDetail.category?.id,
@@ -256,25 +248,6 @@ export default function ProductForm({ isCreate, handleCloseDrawer }: Props) {
                   )}
                 </div>
               </div>
-              <FormControl fullWidth>
-                <FormLabel className="product-form-control__label">
-                  Giá nhập: <span className="field-required">*</span>
-                </FormLabel>
-                <Controller
-                  control={control}
-                  name="unitPrice"
-                  render={({ field }) => (
-                    <TextField
-                      {...field}
-                      onChange={(e) => handleChangeNumberInput(e, field)}
-                      onBlur={(e) => handleBlurCurrencyInput(e, field)}
-                      currency
-                      error={!!errors.unitPrice}
-                      helperText={errors.unitPrice?.message}
-                    />
-                  )}
-                />
-              </FormControl>
               <FormControl fullWidth>
                 <FormLabel className="product-form-control__label">
                   Giá bán: <span className="field-required">*</span>
