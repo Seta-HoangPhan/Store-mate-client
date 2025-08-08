@@ -28,7 +28,7 @@ import {
 import {
   selectCategoryBySearch,
   selectFilterCategoryIds,
-  selectSortedProductMapper,
+  selectProducts,
 } from "@redux/features/product/selector";
 import type { Product } from "@typings/redux";
 import { convertToOptions } from "@utils/convertToOptions";
@@ -95,7 +95,7 @@ export default function Product() {
 
   const categoryBySearch = useSelector(selectCategoryBySearch);
   const filterCategoryIds = useSelector(selectFilterCategoryIds);
-  const productMapper = useSelector(selectSortedProductMapper);
+  const { data: productMapper } = useSelector(selectProducts);
   const { data: categories } = useSelector(selectCategories);
 
   const [productView, setProductView] = useState<ProductView>("list");
@@ -113,7 +113,7 @@ export default function Product() {
   }, [dispatch]);
 
   useEffect(() => {
-    dispatch(fetchProducts(filterCategoryIds));
+    dispatch(fetchProducts({ filterCatIds: filterCategoryIds }));
     for (const key of Object.keys(tableOpenMapper)) {
       if (!filterCategoryIds.includes(extraCategoryId(key))) {
         setTableOpenMapper((prev) => ({

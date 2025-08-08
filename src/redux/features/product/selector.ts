@@ -1,5 +1,4 @@
 import type { RootState } from "@redux/store";
-import type { Product } from "@typings/redux";
 import { removeAccents } from "@utils/removeAccents";
 import { createSelector } from "reselect";
 
@@ -63,21 +62,4 @@ export const selectCategoryBySearch = createSelector(
         .toLowerCase()
         .includes(removeAccents(search).toLowerCase())
     )
-);
-
-export const selectSortedProductMapper = createSelector(
-  selectProducts,
-  ({ data: productMapper }: { data: Record<string, Product[]> }) => {
-    const sortedEntries: [string, Product[]][] = Object.entries(productMapper)
-      .sort(([keyA, a], [keyB, b]) => {
-        if (a.length !== b.length) {
-          return b.length - a.length;
-        }
-        return keyA.localeCompare(keyB);
-      })
-      .map(([key, value]) => [`cat-${key}`, value]);
-
-    const result: Record<string, Product[]> = Object.fromEntries(sortedEntries);
-    return result;
-  }
 );

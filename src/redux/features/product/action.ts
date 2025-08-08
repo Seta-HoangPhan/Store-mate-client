@@ -11,7 +11,10 @@ export const setFilterCategorySearch = createAction<string>(
   "product/filter-category/search"
 );
 
-export const fetchProducts = createAction<number[]>("product/fetchByCategory");
+export const fetchProducts = createAction<{
+  filterCatIds: number[];
+  isCreate?: boolean;
+}>("product/fetchByCategory");
 export const fetchProductsSuccess = createAction<Record<string, Product[]>>(
   "product/fetchAll/success"
 );

@@ -11,6 +11,7 @@ import {
   setFilterCategoriesLS,
 } from "@utils/localStorage/filterCategories";
 import * as actions from "./action";
+import * as utils from "./utils";
 
 export interface InitialState {
   products: {
@@ -119,18 +120,7 @@ const productReducer = createReducer(initialState, (builder) => {
     .addCase(actions.createProduct, (state) => {
       state.productCreate.status = "loading";
     })
-    .addCase(actions.createProductSuccess, (state, { payload: product }) => {
-      state.productCreate.status = "completed";
-      state.productCreate.data = product;
-      state.productCreate.error = undefined;
-
-      const copyProducts = {
-        ...state.products.data,
-      };
-      const key = product.category?.id || "cat";
-      copyProducts[key] = [product, ...copyProducts[key]];
-      state.products.data = copyProducts;
-    })
+    .addCase(actions.createProductSuccess, utils.createProductSuccess)
     .addCase(actions.createProductFailed, (state, { payload: err }) => {
       state.productCreate.status = "rejected";
       state.productCreate.data = undefined;
@@ -167,21 +157,7 @@ const productReducer = createReducer(initialState, (builder) => {
     .addCase(actions.editProduct, (state) => {
       state.productEdit.status = "loading";
     })
-    .addCase(actions.editProductSuccess, (state, { payload: product }) => {
-      state.productEdit.status = "completed";
-      state.productEdit.data = product;
-      state.productEdit.error = undefined;
-
-      const copyProducts = {
-        ...state.products.data,
-      };
-      const key = product.category?.id || "cat";
-      copyProducts[key] = copyProducts[key].map((prod) => {
-        if (prod.id === product.id) return product;
-        return prod;
-      });
-      state.products.data = copyProducts;
-    })
+    .addCase(actions.editProductSuccess, utils.editProductSuccess)
     .addCase(actions.editProductFailed, (state, { payload: err }) => {
       state.productEdit.status = "rejected";
       state.productEdit.data = undefined;

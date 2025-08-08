@@ -1,6 +1,10 @@
 import * as actions from "@redux/features/product/action";
 import type { InitialState as ProductState } from "@redux/features/product/reducer";
-import { selectProductDetail } from "@redux/features/product/selector";
+import {
+  selectFilterCategoryIds,
+  selectProductCreate,
+  selectProductDetail,
+} from "@redux/features/product/selector";
 import type { ApiResponse } from "@typings/apiResponse";
 import type { Product, ProductDetail } from "@typings/redux";
 import { all, call, delay, put, select, takeEvery } from "redux-saga/effects";
@@ -13,6 +17,7 @@ export default function* productSaga() {
     watchFetchProductDetail(),
     watchToggleEditDrawer(),
     watchEditProduct(),
+    watchCreateProductSuccess(),
   ]);
 }
 
@@ -21,12 +26,22 @@ function* watchFetchProducts() {
 }
 
 function* handleFetchProducts({
-  payload,
+  payload: { filterCatIds, isCreate },
 }: ReturnType<typeof actions.fetchProducts>) {
+  let prodCreateCatId;
+  if (isCreate) {
+    const { data: productCreate }: ProductState["productCreate"] = yield select(
+      selectProductCreate
+    );
+    prodCreateCatId = productCreate?.category?.id;
+  }
+
   const [data, err]: ApiResponse<Record<string, Product[]>> = yield call(
     service.fetchProducts,
-    payload
+    filterCatIds,
+    prodCreateCatId
   );
+
   if (data) {
     yield put(actions.fetchProductsSuccess(data));
   } else if (err) {
@@ -80,6 +95,26 @@ function* handleCreateProduct({
     yield put(actions.createProductSuccess(data));
   } else if (err) {
     yield put(actions.createProductFailed(err));
+  }
+}
+
+function* watchCreateProductSuccess() {
+  yield takeEvery(actions.createProductSuccess, handleCreateProductSuccess);
+}
+
+function* handleCreateProductSuccess({
+  payload: product,
+}: ReturnType<typeof actions.createProductSuccess>) {
+  const filterCatIds: number[] = yield select(selectFilterCategoryIds);
+  const catId = product.category?.id;
+
+  if (catId && !filterCatIds.includes(catId)) {
+    yield put(
+      actions.fetchProducts({
+        filterCatIds: [...filterCatIds, catId],
+        isCreate: true,
+      })
+    );
   }
 }
 

@@ -6,10 +6,14 @@ import {
   removeRefreshTokenLS,
   setAccessTokenLS,
 } from "@utils/localStorage/token";
-import axios, { AxiosError, type RawAxiosRequestConfig } from "axios";
+import axios, {
+  AxiosError,
+  type AxiosResponse as OriginalAxiosResponse,
+  type RawAxiosRequestConfig,
+} from "axios";
 import humps from "humps";
-import settings from "./settings";
 import qs from "qs";
+import settings from "./settings";
 
 let isFreshingToken = false;
 let failedRequestQueue: {
@@ -64,11 +68,17 @@ axiosClient.interceptors.request.use((config) => {
 
 interface AxiosRequestConfig extends RawAxiosRequestConfig {
   _retry?: boolean;
+  skipCamelize?: boolean;
 }
 
+type AxiosResponse = OriginalAxiosResponse & {
+  config: AxiosRequestConfig;
+};
+
 axiosClient.interceptors.response.use(
-  (res) => {
-    if (res.data && typeof res.data === "object") {
+  (res: AxiosResponse) => {
+    const shouldSkipCamelize = res.config.skipCamelize;
+    if (res.data && typeof res.data === "object" && !shouldSkipCamelize) {
       res.data = humps.camelizeKeys(res.data);
     }
     return res;
@@ -124,12 +134,14 @@ axiosClient.interceptors.response.use(
 export const axiosGet = async <T>({
   path,
   params,
+  configs,
 }: {
   path: string;
   params?: Record<string, unknown>;
+  configs?: AxiosRequestConfig;
 }): Promise<[T | null, AxiosError | null]> => {
   try {
-    const res = await axiosClient.get(path, { params });
+    const res = await axiosClient.get(path, { params, ...configs });
     return [res.data.data, null];
   } catch (error) {
     if (error instanceof AxiosError) {
