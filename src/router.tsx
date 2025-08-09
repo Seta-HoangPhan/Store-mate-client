@@ -6,7 +6,7 @@ import NotFound from "@pages/NotFound";
 import Order from "@pages/Order";
 import Product from "@pages/Product";
 import Purchase from "@pages/Purchase";
-import Supplier from "@pages/Supplier";
+import SupplierPage from "@pages/Supplier";
 import { createBrowserRouter, Navigate } from "react-router";
 import Layout from "./layout";
 import ProtectedRoute from "@components/routing/ProtectedRoute";
@@ -46,7 +46,7 @@ export const router = createBrowserRouter([
           },
           {
             path: "/supplier",
-            element: <Supplier />,
+            element: <SupplierPage />,
           },
           {
             path: "/dashboard",

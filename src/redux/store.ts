@@ -5,6 +5,7 @@ import authReducer from "./features/auth/reducer";
 import categoryReducer from "./features/category/reducer";
 import productReducer from "./features/product/reducer";
 import rootSaga from "./sagas/rootSaga";
+import supplierReducer from "./features/supplier/reducer";
 
 const sagaMiddleware = createSagaMiddleware();
 const logger = createLogger();
@@ -14,6 +15,7 @@ export const store = configureStore({
     auth: authReducer,
     category: categoryReducer,
     product: productReducer,
+    supplier: supplierReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ thunk: false }).concat(sagaMiddleware, logger),

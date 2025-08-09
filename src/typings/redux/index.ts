@@ -35,6 +35,10 @@ export interface Supplier {
   name: string;
   email?: string;
   address: string;
+  phones: {
+    id: number;
+    phone: string;
+  }[];
 }
 
 export interface Purchase {
