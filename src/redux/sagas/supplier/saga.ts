@@ -39,12 +39,12 @@ function* watchToggleEditSupplier() {
 function* handleToggleEditSupplier({
   payload,
 }: ReturnType<typeof action.toggleOpenEditSupplierDrawer>) {
-  const catId = payload;
-  if (!catId) return;
+  const supId = payload;
+  if (!supId) return;
 
   const [data, err]: ApiResponse<Supplier> = yield call(
-    service.fetchCategoryById,
-    catId
+    service.fetchSupplierById,
+    supId
   );
 
   yield delay(1000);
@@ -64,7 +64,7 @@ function* handleCreateSupplier({
   payload,
 }: ReturnType<typeof action.createSupplier>) {
   const [data, err]: ApiResponse<Supplier> = yield call(
-    service.createCategory,
+    service.createSupplier,
     payload
   );
 
@@ -82,14 +82,11 @@ function* watchEditSupplier() {
 }
 
 function* handleEditSupplier({
-  payload: { id, name },
+  payload,
 }: ReturnType<typeof action.editSupplier>) {
   const [data, err]: ApiResponse<Supplier> = yield call(
-    service.editCategory,
-    id,
-    {
-      name,
-    }
+    service.editSupplier,
+    payload
   );
 
   yield delay(1000);

@@ -9,7 +9,7 @@ import {
   TextField,
 } from "@mui/material";
 import * as action from "@redux/features/auth/action";
-import { AsYouType } from "libphonenumber-js";
+import { formatPhoneNumber } from "@utils/formatPhone";
 import { useState, type ChangeEvent } from "react";
 import {
   Controller,
@@ -52,9 +52,7 @@ export default function Login() {
     }
 
     clearErrors("phone");
-    const formater = new AsYouType("VN");
-    const formated = formater.input(rawValue.slice(0, 9));
-    field.onChange(formated);
+    field.onChange(formatPhoneNumber(rawValue.slice(0, 9), true));
   };
 
   const onSubmit = (data: FormValue) => {

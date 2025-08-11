@@ -1,31 +1,24 @@
 import AddButton from "@components/AddButton";
 import Table, { type Column } from "@components/Table";
-import type { Supplier } from "@typings/redux";
-import "./index.scss";
-import { useEffect } from "react";
-import { useDispatch } from "react-redux";
-import { fetchSuppliers } from "@redux/features/supplier/action";
-import { useSelector } from "react-redux";
+import {
+  fetchSuppliers,
+  toggleOpenCreateSupplierDrawer,
+  toggleOpenEditSupplierDrawer,
+} from "@redux/features/supplier/action";
 import { selectSuppliers } from "@redux/features/supplier/selector";
-import { AsYouType } from "libphonenumber-js";
+import type { Supplier } from "@typings/redux";
+import { formatPhoneNumber } from "@utils/formatPhone";
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import "./index.scss";
 
 const isString = (val: unknown): val is string => typeof val === "string";
-
-const formatPhone = (phone: string) => {
-  const prefix = phone.slice(0, 3);
-  const phoneUniq = phone.slice(3);
-
-  const formater = new AsYouType("VN");
-  const formated = formater.input(phoneUniq);
-
-  return `${prefix} ${formated}`;
-};
 
 const columns: Column<Supplier>[] = [
   {
     id: "name",
     header: "Tên gọi",
-    width: "20%",
+    width: "25%",
     render: (value) => <div>{isString(value) && value}</div>,
   },
   {
@@ -35,7 +28,7 @@ const columns: Column<Supplier>[] = [
     render: (value) => (
       <div>
         {Array.isArray(value) &&
-          value.map((val) => <div>{formatPhone(val.phone)}</div>)}
+          value.map((val) => <div>{formatPhoneNumber(val.phone)}</div>)}
       </div>
     ),
   },
@@ -50,7 +43,7 @@ const columns: Column<Supplier>[] = [
   {
     id: "address",
     header: "Địa chỉ",
-    width: "30%",
+    width: "25%",
     render: (value) => <div>{isString(value) && value}</div>,
   },
 ];
@@ -64,14 +57,28 @@ export default function SupplierPage() {
     dispatch(fetchSuppliers());
   }, [dispatch]);
 
-  const handleClickAddSupplier = () => {};
+  const handleClickAddSupplier = () => {
+    dispatch(toggleOpenCreateSupplierDrawer());
+  };
+
+  const handleEdit = (id: number) => {
+    dispatch(toggleOpenEditSupplierDrawer(id));
+  };
+
+  const hasAction = {
+    onEdit: handleEdit,
+  };
 
   return (
     <div className="supplier-wrapper">
       <div className="supplier-header">
         <AddButton onClick={handleClickAddSupplier} />
       </div>
-      <Table<Supplier> data={suppliers} columns={columns} />
+      <Table<Supplier>
+        data={suppliers}
+        columns={columns}
+        hasAction={hasAction}
+      />
     </div>
   );
 }

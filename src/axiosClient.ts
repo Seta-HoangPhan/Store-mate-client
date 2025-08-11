@@ -158,7 +158,7 @@ export const axiosPost = async <T>({
   configs,
 }: {
   path: string;
-  data?: Record<string, unknown> | FormData;
+  data?: unknown;
   configs?: AxiosRequestConfig;
 }): Promise<[T | null, AxiosError | null]> => {
   try {

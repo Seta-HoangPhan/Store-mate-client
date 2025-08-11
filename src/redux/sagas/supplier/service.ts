@@ -5,30 +5,25 @@ import {
   axiosPost,
   axiosPut,
 } from "../../../axiosClient";
+import type {
+  SupplierCreate,
+  SupplierEdit,
+} from "@redux/features/supplier/action";
 
 export const fetchAllSuppliers = async () => {
   return await axiosGet<Supplier[]>({ path: "/suppliers" });
 };
 
-export const fetchCategoryById = async (id: number) => {
-  return await axiosGet<Category>({ path: `/categories/${id}` });
+export const fetchSupplierById = async (id: number) => {
+  return await axiosGet<Category>({ path: `/suppliers/${id}` });
 };
 
-export const createCategory = async (data: {
-  name: string;
-  description?: string;
-}) => {
-  return await axiosPost<Category>({ path: "categories", data });
+export const createSupplier = async (data: SupplierCreate) => {
+  return await axiosPost<Supplier>({ path: "suppliers", data });
 };
 
-export const editCategory = async (
-  id: number,
-  data: {
-    name?: string;
-    description?: string;
-  }
-) => {
-  return await axiosPut<Category>({ path: `/categories/${id}`, data });
+export const editSupplier = async ({ id, ...data }: SupplierEdit) => {
+  return await axiosPut<Category>({ path: `/suppliers/${id}`, data });
 };
 
 export const deleteCategory = async (id: number) => {

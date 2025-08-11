@@ -1,4 +1,6 @@
 import CategoryForm from "@components/CategoryForm";
+import ProductForm from "@components/ProductForm";
+import SupplierForm from "@components/SupplierForm";
 import CloseIcon from "@mui/icons-material/Close";
 import { Drawer, IconButton } from "@mui/material";
 import {
@@ -9,18 +11,25 @@ import {
   selectIsOpenCreateCategoryDrawer,
   selectIsOpenEditCategoryDrawer,
 } from "@redux/features/category/selector";
-import { useEffect, useState, type ReactElement } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import "./index.scss";
-import {
-  selectOpenCreareProductDrawer,
-  selectOpenEditProductDrawer,
-} from "@redux/features/product/selector";
-import ProductForm from "@components/ProductForm";
 import {
   toggleOpenCreateProductDrawer,
   toggleOpenEditProductDrawer,
 } from "@redux/features/product/action";
+import {
+  selectOpenCreareProductDrawer,
+  selectOpenEditProductDrawer,
+} from "@redux/features/product/selector";
+import {
+  toggleOpenCreateSupplierDrawer,
+  toggleOpenEditSupplierDrawer,
+} from "@redux/features/supplier/action";
+import {
+  selectIsOpenCreateSupplierDrawer,
+  selectIsOpenEditSupplierDrawer,
+} from "@redux/features/supplier/selector";
+import { useEffect, useState, type ReactElement } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import "./index.scss";
 
 const DRAWER_WIDTH = 400;
 const titles = {
@@ -28,6 +37,8 @@ const titles = {
   editCategory: "Chỉnh sửa loại sản phẩm",
   createProduct: "Tạo mới sản phẩm",
   editProduct: "Chỉnh sửa sản phẩm",
+  createSupplier: "Thêm mới nhà cung cấp",
+  editSupplier: "Chỉnh sửa thông tin nhà cung cấp",
 } as const;
 type Title = keyof typeof titles;
 
@@ -40,6 +51,9 @@ export default function LayoutDrawer() {
   const isOpenCreateProduct = useSelector(selectOpenCreareProductDrawer);
   const isOpenEditProduct = useSelector(selectOpenEditProductDrawer);
 
+  const isOpenCreateSupplier = useSelector(selectIsOpenCreateSupplierDrawer);
+  const isOpenEditSupplier = useSelector(selectIsOpenEditSupplierDrawer);
+
   const [title, setTitle] = useState<Title>("createCategory");
   const [component, setComponent] = useState<ReactElement | null>(null);
 
@@ -47,7 +61,9 @@ export default function LayoutDrawer() {
     isOpenCreateCategory ||
     isOpenEditCategory ||
     isOpenCreateProduct ||
-    isOpenEditProduct;
+    isOpenEditProduct ||
+    isOpenCreateSupplier ||
+    isOpenEditSupplier;
 
   useEffect(() => {
     switch (true) {
@@ -71,6 +87,16 @@ export default function LayoutDrawer() {
         setTitle("editProduct");
         setComponent(<ProductForm handleCloseDrawer={handleCloseDrawer} />);
         break;
+      case isOpenCreateSupplier:
+        setTitle("createSupplier");
+        setComponent(
+          <SupplierForm isCreate handleCloseDrawer={handleCloseDrawer} />
+        );
+        break;
+      case isOpenEditSupplier:
+        setTitle("editSupplier");
+        setComponent(<SupplierForm handleCloseDrawer={handleCloseDrawer} />);
+        break;
       default:
         break;
     }
@@ -80,6 +106,8 @@ export default function LayoutDrawer() {
     isOpenEditCategory,
     isOpenCreateProduct,
     isOpenEditProduct,
+    isOpenCreateSupplier,
+    isOpenEditSupplier,
   ]);
 
   const handleCloseDrawer = () => {
@@ -95,6 +123,12 @@ export default function LayoutDrawer() {
         break;
       case isOpenEditProduct:
         dispatch(toggleOpenEditProductDrawer());
+        break;
+      case isOpenCreateSupplier:
+        dispatch(toggleOpenCreateSupplierDrawer());
+        break;
+      case isOpenEditSupplier:
+        dispatch(toggleOpenEditSupplierDrawer());
         break;
       default:
         break;

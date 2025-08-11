@@ -37,9 +37,16 @@ export const createSupplierFailed = createAction<string>(
   "supplier/create/failed"
 );
 
-export type SupplierEdit = Partial<SupplierCreate> & {
+export interface SupplierEdit {
   id: number;
-};
+  name?: string;
+  email?: string;
+  address?: string;
+  phones?: {
+    id?: number;
+    phone: string;
+  }[];
+}
 export const editSupplier = createAction<SupplierEdit>("supplier/edit");
 export const editSupplierSuccess = createAction<Supplier>(
   "supplier/edit/success"

@@ -1,0 +1,71 @@
+@use "@styles/variables.scss" as *;
+
+.supplier-form {
+    height: 100%;
+
+    &-wrapper {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    &__main-content {
+        flex: 1;
+        padding: 20px 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 30px;
+        max-height: calc(100vh - 140px);
+        overflow-y: auto;
+
+        &__label {
+            color: $primary-color !important;
+            margin-bottom: 5px;
+            margin-left: 2px;
+        }
+
+        &__phone-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        &__phone-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        &__phone-add-btn {
+            width: 50px;
+            margin-top: 10px !important;
+        }
+
+        &__loading {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+    }
+
+    &__footer {
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
+        padding: 0 10px;
+        background: $primary-bg;
+
+        &__button {
+            text-transform: capitalize !important;
+            font-weight: 600 !important;
+        }
+    }
+
+    .field-required {
+        color: rgb(243, 32, 32);
+    }
+}
